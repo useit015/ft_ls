@@ -6,15 +6,15 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:39:23 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/11 04:20:24 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/12 04:25:16 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ls.h"
 
-static void		ft_swap_dirent(t_dirent **a, t_dirent **b)
+void		ft_swap(void **a, void **b)
 {
-	t_dirent *t = *a;
+	void *t = *a;
 	*a = *b;
 	*b = t;
 }
@@ -32,7 +32,7 @@ static t_dir	*sort_content(t_dir *d)
 		{
 			if (ft_strcmp(d->dirent->d_name, d->next->dirent->d_name) > 0)
 			{
-				ft_swap_dirent(&d->dirent, &d->next->dirent);
+				ft_swap((void *)&d->dirent, (void *)&d->next->dirent);
 				flag = 0;
 			}
 			d = d->next;
@@ -42,7 +42,7 @@ static t_dir	*sort_content(t_dir *d)
 	}
 }
 
-t_dir	*get_dir_content(char *name)
+t_dir		*get_dir_content(char *name)
 {
 	DIR			*dir;
 	t_dir		*cur;
@@ -62,17 +62,55 @@ t_dir	*get_dir_content(char *name)
 	return (sort_content(head));
 }
 
-void	print_dir_content(t_dir *d, t_args *a, int many)
+static void	print_rights(mode_t m)
 {
-	if (many > 1)
+	ft_printf(S_ISDIR(m) ? "d" : S_ISLNK(m) ? "l" : "-");
+	ft_printf(m & S_IRUSR ? "r" : "-");
+	ft_printf(m & S_IWUSR ? "w" : "-");
+	ft_printf(m & S_IXUSR ? "x" : "-");
+	ft_printf(m & S_IRGRP ? "r" : "-");
+	ft_printf(m & S_IWGRP ? "w" : "-");
+	ft_printf(m & S_IXGRP ? "x" : "-");
+	ft_printf(m & S_IROTH ? "r" : "-");
+	ft_printf(m & S_IWOTH ? "w" : "-");
+	ft_printf(m & S_IXOTH ? "x" : "-");
+}
+
+char		*trim_date(char *s)
+{
+	int		i;
+
+	i = ft_strlen(s);
+	while (s[--i] != ':')
+		;
+	if (s[i] == ':')
+		s[i] = 0;
+	return (s + 4);
+}
+
+void		print_dir_content(t_dir *d, t_args *a, t_options *o, t_max *m)
+{
+	if (o->many > 1)
 		ft_printf("%s:\n", a->arg);
 	while (d && d->dirent)
 	{
-		while (*d->dirent->d_name == '.')
+		while (*d->dirent->d_name == '.' && !o->a)
 			d = d->next;
-		char *s = d->dirent->d_type == DT_DIR ? CYAN : d->dirent->d_type == DT_LNK ? MAGENTA : "";
-		char *e = d->dirent->d_type == 4 || d->dirent->d_type == 10 ? EOC : "";
-		ft_printf("%s%s%s\n", s, d->dirent->d_name, e);
+		char *s = d->dirent->d_type == DT_DIR ? CYAN : d->dirent->d_type == DT_LNK ? MAGENTA : d->fs->st_mode & S_IXUSR ? RED : "";
+		char *e = d->dirent->d_type == 4 || d->dirent->d_type == 10 || d->fs->st_mode & S_IXUSR ? EOC : "";
+		if (o->l)
+		{
+			print_rights(d->fs->st_mode);
+			ft_printf("%*d", m->link + 2, d->fs->st_nlink);
+			ft_printf("%*s", m->user + 1, d->p->pw_name);
+			ft_printf("%*s", m->group + 2, d->g->gr_name);
+			ft_printf("%*lld", m->size + 2, d->fs->st_size);
+			ft_printf(" %s ", trim_date(ctime(&d->fs->st_mtimespec.tv_sec)));
+		}
+		ft_printf("%s%s%s", s, d->dirent->d_name, e);
+		if (o->l && d->dirent->d_type == DT_LNK)
+			ft_printf(" -> %s", d->link_target);
+		ft_printf("\n");
 		d = d->next;
 	}
 	if (a->next && a->next->arg)

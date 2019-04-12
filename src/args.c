@@ -6,18 +6,11 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:18:06 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/11 04:29:59 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/11 19:47:34 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ls.h"
-
-static void		ft_swap_str(char **a, char **b)
-{
-	char *t = *a;
-	*a = *b;
-	*b = t;
-}
 
 static t_args	*sort_args(t_args *a)
 {
@@ -32,7 +25,7 @@ static t_args	*sort_args(t_args *a)
 		{
 			if (ft_strcmp(a->arg, a->next->arg) > 0)
 			{
-				ft_swap_str(&a->arg, &a->next->arg);
+				ft_swap((void *)&a->arg, (void *)&a->next->arg);
 				flag = 0;
 			}
 			a = a->next;

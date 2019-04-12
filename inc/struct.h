@@ -6,12 +6,17 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 21:05:01 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/11 02:38:08 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/12 04:18:57 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef STRUCT_H
 # define STRUCT_H
+
+typedef struct dirent t_dirent;
+typedef struct stat t_stat;
+typedef struct passwd t_passwd;
+typedef struct group t_group;
 
 typedef struct		s_options
 {
@@ -20,7 +25,17 @@ typedef struct		s_options
 	unsigned int	a:1;
 	unsigned int	r:1;
 	unsigned int	t:1;
+	unsigned int	many:25;
 }					t_options;
+
+typedef struct		s_max
+{
+	unsigned int	link:4;
+	unsigned int	user:4;
+	unsigned int	group:4;
+	unsigned int	time:4;
+	unsigned int	size:8;
+}					t_max;
 
 typedef struct		s_args
 {
@@ -28,13 +43,14 @@ typedef struct		s_args
 	struct s_args	*next;
 }					t_args;
 
-typedef struct dirent t_dirent;
-
 typedef struct		s_dir
 {
+	char			*link_target;
 	t_dirent		*dirent;
+	t_stat			*fs;
+	t_passwd		*p;
+	t_group			*g;
 	struct s_dir	*next;
 }					t_dir;
-
 
 #endif

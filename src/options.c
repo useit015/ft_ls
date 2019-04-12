@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 03:37:51 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/10 23:28:14 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/12 03:23:31 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,5 +53,6 @@ int			parse_options(int ac, char **av, t_options *o)
 			(av[i])++;
 		}
 	}
+	o->many = ac - i;
 	return (i);
 }
