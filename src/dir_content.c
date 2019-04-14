@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:39:23 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/12 04:25:16 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/14 05:02:25 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,14 @@ static t_dir	*sort_content(t_dir *d)
 	}
 }
 
-t_dir		*get_dir_content(char *name)
+t_dir		*get_dir_content(char *name, t_options *o)
 {
 	DIR			*dir;
 	t_dir		*cur;
 	t_dir		*head;
 
 	if (!(dir = opendir(name)))
-		ft_printf("i can't read this shit --> |%s|\n", name);
+		return (NULL);
 	cur = (t_dir *)malloc(sizeof(t_dir));
 	head = cur;
 	cur->next = NULL;
@@ -59,12 +59,13 @@ t_dir		*get_dir_content(char *name)
 		cur = cur->next;
 	}
 	closedir(dir);
-	return (sort_content(head));
+	return (o->f ? head : sort_content(head));
 }
 
-static void	print_rights(mode_t m)
+
+void	print_rights(mode_t m)
 {
-	ft_printf(S_ISDIR(m) ? "d" : S_ISLNK(m) ? "l" : "-");
+	ft_printf("%c", get_filetype(m));
 	ft_printf(m & S_IRUSR ? "r" : "-");
 	ft_printf(m & S_IWUSR ? "w" : "-");
 	ft_printf(m & S_IXUSR ? "x" : "-");
@@ -76,38 +77,74 @@ static void	print_rights(mode_t m)
 	ft_printf(m & S_IXOTH ? "x" : "-");
 }
 
-char		*trim_date(char *s)
+char		*ft_trim(char *s)
 {
 	int		i;
 
+	while (ft_isspace(*s))
+		s++;
 	i = ft_strlen(s);
-	while (s[--i] != ':')
-		;
-	if (s[i] == ':')
+	while (ft_isspace(s[--i]))
 		s[i] = 0;
-	return (s + 4);
+	return (s);
+}
+
+char		*format_date(long int t)
+{
+	char	*s;
+	char	*y;
+	time_t	now;
+
+	now = time(NULL);
+	s = ctime(&t);
+	y = ft_trim(ft_strrchr(s, ' '));
+	if (now - t > 15780000)
+	{
+		s[11] = ' ';
+		s[12] = 0;
+		s = ft_strjoin(s + 4, y);
+	}
+	else if ((y = ft_strrchr(s, ':')))
+	{
+		*y = 0;
+		s = ft_strdup(s + 4);
+	}
+	return (s);
+}
+
+int			hidden(char *n, t_options *o)
+{
+	if (o->aa && (!ft_strcmp(n, ".") || !ft_strcmp(n, "..")))
+		return (1);
+	if ((!*n || *n == '.') && !o->a && !o->aa)
+		return (1);
+	return (0);
 }
 
 void		print_dir_content(t_dir *d, t_args *a, t_options *o, t_max *m)
 {
-	if (o->many > 1)
-		ft_printf("%s:\n", a->arg);
+	if (o->l)
+		ft_printf("total %lld\n", a->total);
 	while (d && d->dirent)
 	{
-		while (*d->dirent->d_name == '.' && !o->a)
+		while (hidden(d->dirent->d_name, o))
 			d = d->next;
-		char *s = d->dirent->d_type == DT_DIR ? CYAN : d->dirent->d_type == DT_LNK ? MAGENTA : d->fs->st_mode & S_IXUSR ? RED : "";
-		char *e = d->dirent->d_type == 4 || d->dirent->d_type == 10 || d->fs->st_mode & S_IXUSR ? EOC : "";
+		char *s = get_color_start(d->fs->st_mode);
+		char *e = get_color_end(d->fs->st_mode);
 		if (o->l)
 		{
+			char *date = format_date(d->fs->st_mtimespec.tv_sec);
 			print_rights(d->fs->st_mode);
 			ft_printf("%*d", m->link + 2, d->fs->st_nlink);
-			ft_printf("%*s", m->user + 1, d->p->pw_name);
-			ft_printf("%*s", m->group + 2, d->g->gr_name);
+			ft_printf(" %-*s", m->user, d->p->pw_name);
+			ft_printf("  %-*s", m->group, d->g->gr_name);
 			ft_printf("%*lld", m->size + 2, d->fs->st_size);
-			ft_printf(" %s ", trim_date(ctime(&d->fs->st_mtimespec.tv_sec)));
+			ft_printf(" %s ", date);
+			free(date);
 		}
 		ft_printf("%s%s%s", s, d->dirent->d_name, e);
+		if (o->ff)
+			ft_printf("%s", get_suff(d->fs->st_mode));
 		if (o->l && d->dirent->d_type == DT_LNK)
 			ft_printf(" -> %s", d->link_target);
 		ft_printf("\n");

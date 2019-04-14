@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:18:06 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/11 19:47:34 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/13 23:22:53 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,15 @@
 
 static t_args	*sort_args(t_args *a)
 {
+	int		flag;
+	t_args	*head;
+
 	if (!a)
-			return (NULL);
-	t_args *head = a;
+		return (NULL);
+	head = a;
 	while (1)
 	{
-		int flag = 1;
+		flag = 1;
 		a = head;
 		while (a->next && a->next->arg)
 		{
@@ -31,7 +34,7 @@ static t_args	*sort_args(t_args *a)
 			a = a->next;
 		}
 		if (flag)
-				return (head);
+			return (head);
 	}
 }
 

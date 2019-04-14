@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 21:05:01 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/12 04:18:57 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/14 04:44:13 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,14 @@ typedef struct group t_group;
 typedef struct		s_options
 {
 	unsigned int	l:1;
-	unsigned int	rr:1;
-	unsigned int	a:1;
-	unsigned int	r:1;
 	unsigned int	t:1;
-	unsigned int	many:25;
+	unsigned int	a:1;
+	unsigned int	aa:1;
+	unsigned int	r:1;
+	unsigned int	rr:1;
+	unsigned int	f:1;
+	unsigned int	ff:1;
+	unsigned int	many:20;
 }					t_options;
 
 typedef struct		s_max
@@ -40,6 +43,7 @@ typedef struct		s_max
 typedef struct		s_args
 {
 	char			*arg;
+	int				total;
 	struct s_args	*next;
 }					t_args;
 
