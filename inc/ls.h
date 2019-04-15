@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 01:22:43 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/14 04:57:39 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/15 01:01:41 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 # include "struct.h"
 # include "colors.h"
 
+void	check_d(char *n, t_dir *d);
+int		hidden(char *n, t_options *o);
 char	*get_suff(mode_t m);
 char	*get_color_start(mode_t m);
 char	*get_color_end(mode_t m);
