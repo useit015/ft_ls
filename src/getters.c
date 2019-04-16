@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/14 04:55:22 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/14 04:57:32 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/16 05:23:05 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,15 @@ char	get_filetype(mode_t m)
 		return ('-');
 }
 
+// char	*get_bg(mode_t m)
+// {
+// 	else if (S_ISBLK(m))
+// 		return (BG_CYAN);
+// 	else if (S_ISCHR(m))
+// 		return (BG_YELLOW);
+// 	else
+// 		return ("");
+// }
 char	*get_color_start(mode_t m)
 {
 	if (S_ISDIR(m))
@@ -40,13 +49,19 @@ char	*get_color_start(mode_t m)
 		return (RED);
 	else if (S_ISFIFO(m))
 		return (YELLOW);
+	else if (S_ISSOCK(m))
+		return (GREEN);
+	else if (S_ISBLK(m))
+		return (BG_CYAN);
+	else if (S_ISCHR(m))
+		return (BG_YELLOW);
 	else
 		return ("");
 }
 
 char	*get_color_end(mode_t m)
 {
-	if (S_ISDIR(m) || S_ISLNK(m) || m & S_IXUSR || S_ISFIFO(m))
+	if (S_ISDIR(m) || S_ISLNK(m) || m & S_IXUSR || S_ISFIFO(m) || S_ISBLK(m) || S_ISCHR(m))
 		return (EOC);
 	else
 		return ("");

@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:39:23 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/15 04:26:36 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/16 03:42:08 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,31 +51,34 @@ t_dir		*get_dir_content(char *name, t_options *o)
 	if (!(dir = opendir(name)))
 		return (NULL);
 	cur = (t_dir *)malloc(sizeof(t_dir));
+	cur->dirent = (t_dirent *)malloc(sizeof(t_dirent));
 	head = cur;
 	cur->next = NULL;
-	while ((cur->dirent = readdir(dir)) != NULL)
+	while (ft_memcpy(cur->dirent, readdir(dir), sizeof(t_dirent)))
 	{
 		if (!(cur->next = (t_dir *)malloc(sizeof(t_dir))))
 			return (NULL);
 		cur = cur->next;
+		cur->dirent = (t_dirent *)malloc(sizeof(t_dirent));
+		cur->next = NULL;
 	}
-	closedir(dir);
+	(void)closedir(dir);
 	return (o->f ? head : sort_content(head));
 }
 
 
 void	print_rights(mode_t m)
 {
-	ft_printf("%c", get_filetype(m));
-	ft_printf(m & S_IRUSR ? "r" : "-");
-	ft_printf(m & S_IWUSR ? "w" : "-");
-	ft_printf(m & S_IXUSR ? "x" : "-");
-	ft_printf(m & S_IRGRP ? "r" : "-");
-	ft_printf(m & S_IWGRP ? "w" : "-");
-	ft_printf(m & S_IXGRP ? "x" : "-");
-	ft_printf(m & S_IROTH ? "r" : "-");
-	ft_printf(m & S_IWOTH ? "w" : "-");
-	ft_printf(m & S_IXOTH ? "x" : "-");
+	(void)ft_printf("%c", get_filetype(m));
+	(void)ft_printf(m & S_IRUSR ? "r" : "-");
+	(void)ft_printf(m & S_IWUSR ? "w" : "-");
+	(void)ft_printf(m & S_IXUSR ? "x" : "-");
+	(void)ft_printf(m & S_IRGRP ? "r" : "-");
+	(void)ft_printf(m & S_IWGRP ? "w" : "-");
+	(void)ft_printf(m & S_IXGRP ? "x" : "-");
+	(void)ft_printf(m & S_IROTH ? "r" : "-");
+	(void)ft_printf(m & S_IWOTH ? "w" : "-");
+	(void)ft_printf(m & S_IXOTH ? "x" : "-");
 }
 
 char		*ft_trim(char *s)
@@ -128,12 +131,8 @@ void		print_dir_content(t_dir *d, t_args *a, t_options *o, t_max *m)
 		ft_printf("total %lld\n", a->total);
 	while (d && d->dirent)
 	{
-		if (!hidden(d->dirent->d_name, o))
+		if (!hidden(d->dirent->d_name, o) && d->fs)
 		{
-			if (d->fs)
-				ft_printf("if\n\n\n\n");
-			else
-				ft_printf("else\n\n\n\n");
 			char *s = get_color_start(d->fs->st_mode);
 			char *e = get_color_end(d->fs->st_mode);
 			if (o->l)
@@ -145,7 +144,7 @@ void		print_dir_content(t_dir *d, t_args *a, t_options *o, t_max *m)
 					ft_printf(" %-*s ", m->user, d->p->pw_name);
 				ft_printf(" %-*s", m->group, d->g->gr_name);
 				if (d->dirent->d_type == DT_BLK || d->dirent->d_type == DT_CHR)
-					ft_printf("%d %*d,", m->major, d->m.minor, d->m.major);
+					ft_printf(" %*d, %*d", m->major, d->m.major, m->minor, d->m.minor);
 				else
 					ft_printf("%*lld", m->size + 2, d->fs->st_size);
 				ft_printf(" %s ", date);

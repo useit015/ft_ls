@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/06 03:49:33 by onahiz            #+#    #+#             */
-/*   Updated: 2018/10/12 02:35:28 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/16 03:41:21 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ void	*ft_memcpy(void *dst, const void *src, size_t n)
 	unsigned char	*cdst;
 	unsigned char	*csrc;
 
+	if (!dst || !src)
+		return (NULL);
 	i = 0;
 	cdst = (unsigned char *)dst;
 	csrc = (unsigned char *)src;

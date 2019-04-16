@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/13 23:16:39 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/15 04:27:38 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/16 01:33:02 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,20 +43,21 @@ void	set_max(t_max *m, t_dir *d)
 	m->group = max(ft_strlen(d->g->gr_name), m->group);
 	m->size = max(ft_intlen(d->fs->st_size), m->size);
 	m->major = max(ft_intlen(d->m.major), m->major);
+	m->minor = max(ft_intlen(d->m.minor), m->minor);
 }
 
 void	check_d(char *n, t_dir *d)
 {
-	t_stat s;
+	// t_stat s;
+	n = NULL;
 	while (d && d->dirent)
 	{
-		if (d->dirent->d_type == DT_BLK || d->dirent->d_type == DT_CHR)
-		{
-			if (stat(ft_strjoin(n, d->dirent->d_name), &s) < 0)
-					break ;
-			ft_printf("i am in files |%29s| --> |%d|", d->dirent->d_name, s.st_rdev);
-			ft_printf(">> minor >> |%d| >> major >> |%d|\n", minor(s.st_rdev), major(s.st_rdev));
-		}
+		// if (d->dirent->d_type == DT_BLK || d->dirent->d_type == DT_CHR)
+		// {
+			// stat(ft_strjoin(n, d->dirent->d_name), &s);
+			// ft_printf("i am in files |%29s|\n", d->dirent->d_name);
+			// ft_printf(">> minor >> |%d| >> major >> |%d|\n", minor(s.st_rdev), major(s.st_rdev));
+		// }
 		d = d->next;
 	}
 }
@@ -79,6 +80,7 @@ void	get_stat(t_dir *d, t_args *a, t_options *o, t_max *m)
 
 	tmp = ft_strjoin(a->arg, "/");
 	init_max(m);
+	// check_d(tmp, d);
 	a->total = 0;
 	while (d && d->dirent)
 	{
@@ -93,7 +95,7 @@ void	get_stat(t_dir *d, t_args *a, t_options *o, t_max *m)
 		{
 			if (lstat(path, d->fs) < 0)
 				break ;
-			d->link_target = (char *)malloc(sizeof(char) * (d->fs->st_size + 1));
+			d->link_target = ft_strnew(d->fs->st_size + 1);
 			if (readlink(path, d->link_target, d->fs->st_size) == -1)
 				break ;
 		}
