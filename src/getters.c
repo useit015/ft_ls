@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/14 04:55:22 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/16 05:23:05 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/17 00:14:31 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ char	*get_color_start(mode_t m)
 
 char	*get_color_end(mode_t m)
 {
-	if (S_ISDIR(m) || S_ISLNK(m) || m & S_IXUSR || S_ISFIFO(m) || S_ISBLK(m) || S_ISCHR(m))
+	if (S_ISDIR(m) || S_ISLNK(m) || m & S_IXUSR || S_ISFIFO(m) || S_ISBLK(m) || S_ISCHR(m) || S_ISSOCK(m))
 		return (EOC);
 	else
 		return ("");
@@ -77,6 +77,8 @@ char	*get_suff(mode_t m)
 		return ("*");
 	else if (S_ISFIFO(m))
 		return ("|");
+	else if (S_ISSOCK(m))
+		return ("=");
 	else
 		return ("");
 }

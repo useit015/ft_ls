@@ -6,13 +6,13 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:39:23 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/16 03:42:08 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/17 02:06:53 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ls.h"
 
-void		ft_swap(void **a, void **b)
+void			ft_swap(void **a, void **b)
 {
 	void *t = *a;
 	*a = *b;
@@ -38,19 +38,34 @@ static t_dir	*sort_content(t_dir *d)
 			d = d->next;
 		}
 		if (flag)
-				return (head);
+			return (head);
 	}
 }
 
-t_dir		*get_dir_content(char *name, t_options *o)
+static t_dir	*rev_content(t_dir *d)
+{
+	if (!d)
+			return (NULL);
+	t_dir *prev = NULL;
+	t_dir *next = NULL;
+	while (d)
+	{
+		next = d->next;
+		d->next = prev;
+		prev = d;
+		d = next;
+	}
+	return (prev);
+}
+
+t_dir		*get_dir_content(t_args *a, t_options *o)
 {
 	DIR			*dir;
 	t_dir		*cur;
 	t_dir		*head;
 
-	if (!(dir = opendir(name)))
+	if (!(dir = opendir(a->arg)) || !(cur = (t_dir *)malloc(sizeof(t_dir))))
 		return (NULL);
-	cur = (t_dir *)malloc(sizeof(t_dir));
 	cur->dirent = (t_dirent *)malloc(sizeof(t_dirent));
 	head = cur;
 	cur->next = NULL;
@@ -59,11 +74,18 @@ t_dir		*get_dir_content(char *name, t_options *o)
 		if (!(cur->next = (t_dir *)malloc(sizeof(t_dir))))
 			return (NULL);
 		cur = cur->next;
-		cur->dirent = (t_dirent *)malloc(sizeof(t_dirent));
+		if (!(cur->dirent = (t_dirent *)malloc(sizeof(t_dirent))))
+			return (NULL);
 		cur->next = NULL;
 	}
 	(void)closedir(dir);
-	return (o->f ? head : sort_content(head));
+	if (!o->f)
+	{
+		head = sort_content(head);
+		if (o->r)
+			head = rev_content(head);
+	}
+	return (head);
 }
 
 

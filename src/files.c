@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/13 23:16:39 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/16 01:33:02 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/17 01:44:47 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static int	max(int a, int b)
 	return (a >= b ? a : b);
 }
 
-static void	init_max(t_max *m)
+void	init_max(t_max *m)
 {
 	m->link = 0;
 	m->user = 0;
@@ -44,34 +44,34 @@ void	set_max(t_max *m, t_dir *d)
 	m->size = max(ft_intlen(d->fs->st_size), m->size);
 	m->major = max(ft_intlen(d->m.major), m->major);
 	m->minor = max(ft_intlen(d->m.minor), m->minor);
+	m->size = max(m->minor + m->major + 1, m->size);
 }
 
-void	check_d(char *n, t_dir *d)
-{
-	// t_stat s;
-	n = NULL;
-	while (d && d->dirent)
-	{
-		// if (d->dirent->d_type == DT_BLK || d->dirent->d_type == DT_CHR)
-		// {
-			// stat(ft_strjoin(n, d->dirent->d_name), &s);
-			// ft_printf("i am in files |%29s|\n", d->dirent->d_name);
-			// ft_printf(">> minor >> |%d| >> major >> |%d|\n", minor(s.st_rdev), major(s.st_rdev));
-		// }
-		d = d->next;
-	}
-}
+// void	check_d(char *n, t_dir *d)
+// {
+// 	// t_stat s;
+// 	n = NULL;
+// 	while (d && d->dirent)
+// 	{
+// 		// if (d->dirent->d_type == DT_BLK || d->dirent->d_type == DT_CHR)
+// 		// {
+// 			// stat(ft_strjoin(n, d->dirent->d_name), &s);
+// 			// ft_printf("i am in files |%29s|\n", d->dirent->d_name);
+// 			// ft_printf(">> minor >> |%d| >> major >> |%d|\n", minor(s.st_rdev), major(s.st_rdev));
+// 		// }
+// 		d = d->next;
+// 	}
+// }
 
 int		file_type(int t)
 {
 	return (t == DT_FIFO || t == DT_CHR || t == DT_BLK || t == DT_REG || t == DT_DIR || t == DT_LNK || t == DT_SOCK || t == DT_WHT);
 }
 
-void	set_ids(t_stat *s, t_passwd **p, t_group **g)
-{
-	*p = getpwuid(s->st_uid);
-	*g = getgrgid(s->st_gid);
-}
+// void	set_ids(t_stat *s, t_passwd **p, t_group **g)
+// {
+
+// }
 
 void	get_stat(t_dir *d, t_args *a, t_options *o, t_max *m)
 {
@@ -80,7 +80,6 @@ void	get_stat(t_dir *d, t_args *a, t_options *o, t_max *m)
 
 	tmp = ft_strjoin(a->arg, "/");
 	init_max(m);
-	// check_d(tmp, d);
 	a->total = 0;
 	while (d && d->dirent)
 	{
@@ -106,7 +105,8 @@ void	get_stat(t_dir *d, t_args *a, t_options *o, t_max *m)
 			d->m.major = major(d->fs->st_rdev);
 			d->m.minor = minor(d->fs->st_rdev);
 		}
-		set_ids(d->fs, &d->p, &d->g);
+		d->p = getpwuid(d->fs->st_uid);
+		d->g = getgrgid(d->fs->st_gid);
 		if (!hidden(d->dirent->d_name, o))
 		{
 			set_max(m, d);
