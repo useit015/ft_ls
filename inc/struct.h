@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 21:05:01 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/16 03:36:42 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/19 01:35:51 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ typedef struct		s_max
 	unsigned int	link:4;
 	unsigned int	user:4;
 	unsigned int	group:4;
-	unsigned int	time:4;
 	unsigned int	major:4;
 	unsigned int	minor:4;
 	unsigned int	size:8;
@@ -58,8 +57,8 @@ typedef struct		s_minmaj
 
 typedef struct		s_dir
 {
-	t_minmaj		m;
 	char			*link_target;
+	t_minmaj		*m;
 	t_dirent		*dirent;
 	t_stat			*fs;
 	t_passwd		*p;

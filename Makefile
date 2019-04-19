@@ -6,11 +6,11 @@
 #    By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/04/10 03:40:58 by onahiz            #+#    #+#              #
-#    Updated: 2019/04/14 04:58:40 by onahiz           ###   ########.fr        #
+#    Updated: 2019/04/20 00:29:42 by onahiz           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = ls
+NAME = ft_ls
 
 SRC = src/main.c src/options.c src/args.c src/dir_content.c src/files.c src/getters.c
 

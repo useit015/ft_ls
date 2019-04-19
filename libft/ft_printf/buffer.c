@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/05 00:48:28 by onahiz            #+#    #+#             */
-/*   Updated: 2018/11/26 21:45:25 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/19 23:52:03 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,10 @@ int		buff_cpy(char *f, int pos, va_list ap, t_buff *b)
 	if (*(f + i + 1) && f[i] == '%')
 	{
 		if ((j = handler(f + i + 1, ap, s, b)))
+		{
+			free(s);
 			return (1);
+		}
 	}
 	if (*s && j)
 	{
@@ -54,6 +57,7 @@ int		buff_cpy(char *f, int pos, va_list ap, t_buff *b)
 			b->i++;
 		return (1);
 	}
+	free(s);
 	if (!f[i] || (f[i] == '%' && !f[i + 1]))
 		return (1);
 	return (0);

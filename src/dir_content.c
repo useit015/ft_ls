@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:39:23 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/17 02:06:53 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/20 00:36:14 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,38 @@ void			ft_swap(void **a, void **b)
 	*b = t;
 }
 
-static t_dir	*sort_content(t_dir *d)
+t_dir	*sort_time(t_dir *d)
 {
 	if (!d)
 			return (NULL);
+	t_dir *head = d;
+	while (1)
+	{
+		int flag = 1;
+		d = head;
+		while (d->next)
+		{
+			if (d->fs && d->next->fs && d->fs->st_mtimespec.tv_sec < d->next->fs->st_mtimespec.tv_sec)
+			{
+				ft_swap((void *)&d->dirent, (void *)&d->next->dirent);
+				ft_swap((void *)&d->fs, (void *)&d->next->fs);
+				ft_swap((void *)&d->p, (void *)&d->next->p);
+				ft_swap((void *)&d->g, (void *)&d->next->g);
+				ft_swap((void *)&d->m, (void *)&d->next->m);
+				ft_swap((void *)&d->link_target, (void *)&d->next->link_target);
+				flag = 0;
+			}
+			d = d->next;
+		}
+		if (flag)
+			return (head);
+	}
+}
+
+t_dir	*sort_content(t_dir *d)
+{
+	if (!d)
+		return (NULL);
 	t_dir *head = d;
 	while (1)
 	{
@@ -33,6 +61,11 @@ static t_dir	*sort_content(t_dir *d)
 			if (ft_strcmp(d->dirent->d_name, d->next->dirent->d_name) > 0)
 			{
 				ft_swap((void *)&d->dirent, (void *)&d->next->dirent);
+				ft_swap((void *)&d->fs, (void *)&d->next->fs);
+				ft_swap((void *)&d->p, (void *)&d->next->p);
+				ft_swap((void *)&d->g, (void *)&d->next->g);
+				ft_swap((void *)&d->m, (void *)&d->next->m);
+				ft_swap((void *)&d->link_target, (void *)&d->next->link_target);
 				flag = 0;
 			}
 			d = d->next;
@@ -42,10 +75,10 @@ static t_dir	*sort_content(t_dir *d)
 	}
 }
 
-static t_dir	*rev_content(t_dir *d)
+t_dir	*rev_content(t_dir *d)
 {
 	if (!d)
-			return (NULL);
+		return (NULL);
 	t_dir *prev = NULL;
 	t_dir *next = NULL;
 	while (d)
@@ -58,17 +91,19 @@ static t_dir	*rev_content(t_dir *d)
 	return (prev);
 }
 
-t_dir		*get_dir_content(t_args *a, t_options *o)
+t_dir		*get_dir_content(t_args *a)
 {
 	DIR			*dir;
 	t_dir		*cur;
 	t_dir		*head;
 
-	if (!(dir = opendir(a->arg)) || !(cur = (t_dir *)malloc(sizeof(t_dir))))
+	if (!(dir = opendir(a->arg)))
 		return (NULL);
-	cur->dirent = (t_dirent *)malloc(sizeof(t_dirent));
+	if (!(cur = (t_dir *)malloc(sizeof(t_dir))))
+		return (NULL);
+	if (!(cur->dirent = (t_dirent *)malloc(sizeof(t_dirent))))
+		return (NULL);
 	head = cur;
-	cur->next = NULL;
 	while (ft_memcpy(cur->dirent, readdir(dir), sizeof(t_dirent)))
 	{
 		if (!(cur->next = (t_dir *)malloc(sizeof(t_dir))))
@@ -76,15 +111,10 @@ t_dir		*get_dir_content(t_args *a, t_options *o)
 		cur = cur->next;
 		if (!(cur->dirent = (t_dirent *)malloc(sizeof(t_dirent))))
 			return (NULL);
-		cur->next = NULL;
 	}
+	free(cur->dirent);
+	cur->dirent = NULL;
 	(void)closedir(dir);
-	if (!o->f)
-	{
-		head = sort_content(head);
-		if (o->r)
-			head = rev_content(head);
-	}
 	return (head);
 }
 
@@ -140,6 +170,7 @@ char		*format_date(long int t)
 
 int			hidden(char *n, t_options *o)
 {
+
 	if (o->aa && (!ft_strcmp(n, ".") || !ft_strcmp(n, "..")))
 		return (1);
 	if ((!*n || *n == '.') && !o->a && !o->aa)
@@ -150,7 +181,7 @@ int			hidden(char *n, t_options *o)
 void		print_dir_content(t_dir *d, t_args *a, t_options *o, t_max *m)
 {
 	if (o->l)
-		ft_printf("total %lld\n", a->total);
+		ft_printf("total %d\n", a->total);
 	while (d && d->dirent)
 	{
 		if (!hidden(d->dirent->d_name, o) && d->fs)
@@ -166,7 +197,7 @@ void		print_dir_content(t_dir *d, t_args *a, t_options *o, t_max *m)
 					ft_printf(" %-*s ", m->user, d->p->pw_name);
 				ft_printf(" %-*s", m->group, d->g->gr_name);
 				if (d->dirent->d_type == DT_BLK || d->dirent->d_type == DT_CHR)
-					ft_printf(" %*d, %*d", m->major, d->m.major, m->minor, d->m.minor);
+					ft_printf(" %*d, %*d", m->major, d->m->major, m->minor, d->m->minor);
 				else
 					ft_printf("%*lld", m->size + 2, d->fs->st_size);
 				ft_printf(" %s ", date);

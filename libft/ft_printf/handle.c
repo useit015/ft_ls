@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/16 05:52:37 by onahiz            #+#    #+#             */
-/*   Updated: 2018/11/26 21:44:47 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/20 00:25:19 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,10 @@ static void	display(char *s, int nu, char *cut, t_buff *b)
 		tmp = s;
 		s = ft_strjoin(cut, s);
 		len = ft_strlen(s);
+		free(tmp);
 	}
 	write(1, s, len);
+	free(s);
 	b->ret += len;
 	ft_memset(b->buff, 0, BUFF_SIZE);
 }
@@ -44,7 +46,7 @@ static int	buff_is_null(char *s)
 {
 	while (*s)
 	{
-		if (*s != 48 && *s != ' ')
+		if (*s != 48 && *s != 32)
 			return (0);
 		s++;
 	}
@@ -81,7 +83,10 @@ int			handler(char *f, va_list ap, char *cut, t_buff *b)
 		else
 			s = new_fspec(&arg, *f);
 		if (arg.err)
+		{
+			free(s);
 			return (0);
+		}
 		format(s, &arg, cut, b);
 		if ((i = get_next_spec(++f)) > BUFF_SIZE - b->i)
 		{

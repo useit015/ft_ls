@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/09/17 18:43:39 by onahiz            #+#    #+#             */
-/*   Updated: 2018/11/26 21:45:06 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/20 00:25:23 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ char		*convert_arg(char *f, va_list ap, t_param *arg, char *base)
 	else if (*f == 'S' || (*f == 's' && arg->l))
 		s = convert_wstr(arg, ap);
 	else if (*f == 's')
-		s = va_arg(ap, char *);
+		s = ft_strdup(va_arg(ap, char *));
 	else if (*f == 'C' || (*f == 'c' && arg->l))
 		s = convert_wchar(arg, ap);
 	else if (*f == 'c')
@@ -112,6 +112,6 @@ char		*convert_arg(char *f, va_list ap, t_param *arg, char *base)
 	else
 		s = convert_b(f, arg, ap, base);
 	if (!s)
-		s = "(null)";
+		s = ft_strdup("(null)");
 	return (s);
 }
