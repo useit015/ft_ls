@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 03:37:51 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/14 22:39:19 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/20 03:50:22 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int			parse_options(int ac, char **av, t_options *o)
 	init_options(o);
 	while (++i < ac)
 	{
-		if (*av[i] == '-')
+		if (*av[i] == '-' && ft_strcmp(av[i], "--") != 0)
 			(av[i])++;
 		else
 			break ;

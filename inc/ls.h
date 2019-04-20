@@ -6,23 +6,24 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 01:22:43 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/19 01:05:55 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/20 02:36:09 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LS_H
 # define LS_H
 
-# include <stdio.h>
 # include <pwd.h>
 # include <grp.h>
 # include <time.h>
+# include <stdio.h>
+# include <errno.h>
+# include "struct.h"
+# include "colors.h"
 # include <dirent.h>
 # include <sys/stat.h>
 # include <sys/types.h>
 # include "../libft/libft.h"
-# include "struct.h"
-# include "colors.h"
 
 void	init_max(t_max *m);
 void	set_max(t_max *m, t_dir *d);

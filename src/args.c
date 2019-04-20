@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:18:06 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/19 01:49:07 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/20 00:46:31 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ t_args			*parse_args(int ac, char **av, int i)
 	{
 		cur->next = (t_args *)malloc(sizeof(t_args));
 		cur = cur->next;
-		cur->arg = av[i];
+		cur->arg = ft_strdup(av[i]);
 		cur->next = NULL;
 	}
 	return (sort_args(head));

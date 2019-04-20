@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/13 23:16:39 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/20 00:32:48 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/20 02:26:55 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ t_dir	*get_stat(t_dir *d, t_args *a, t_options *o, t_max *m)
 	tmp = ft_strjoin(a->arg, "/");
 	init_max(m);
 	a->total = 0;
-	while (d && d->dirent)
+	while (d)
 	{
 		if (!file_type(d->dirent->d_type))
 		{

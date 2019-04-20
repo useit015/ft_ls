@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:39:23 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/20 00:36:14 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/20 03:03:35 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ t_dir		*get_dir_content(t_args *a)
 	DIR			*dir;
 	t_dir		*cur;
 	t_dir		*head;
+	t_dir		*prev;
 
 	if (!(dir = opendir(a->arg)))
 		return (NULL);
@@ -108,12 +109,14 @@ t_dir		*get_dir_content(t_args *a)
 	{
 		if (!(cur->next = (t_dir *)malloc(sizeof(t_dir))))
 			return (NULL);
+		prev = cur;
 		cur = cur->next;
 		if (!(cur->dirent = (t_dirent *)malloc(sizeof(t_dirent))))
 			return (NULL);
 	}
 	free(cur->dirent);
-	cur->dirent = NULL;
+	free(cur);
+	prev->next = NULL;
 	(void)closedir(dir);
 	return (head);
 }
@@ -186,8 +189,8 @@ void		print_dir_content(t_dir *d, t_args *a, t_options *o, t_max *m)
 	{
 		if (!hidden(d->dirent->d_name, o) && d->fs)
 		{
-			char *s = get_color_start(d->fs->st_mode);
-			char *e = get_color_end(d->fs->st_mode);
+			// char *s = get_color_start(d->fs->st_mode);
+			// char *e = get_color_end(d->fs->st_mode);
 			if (o->l)
 			{
 				char *date = format_date(d->fs->st_mtimespec.tv_sec);
@@ -203,7 +206,8 @@ void		print_dir_content(t_dir *d, t_args *a, t_options *o, t_max *m)
 				ft_printf(" %s ", date);
 				free(date);
 			}
-			ft_printf("%s%s%s", s, d->dirent->d_name, e);
+			// ft_printf("%s%s%s", s, d->dirent->d_name, e);
+			ft_printf(d->dirent->d_name);
 			if (o->ff)
 				ft_printf("%s", get_suff(d->fs->st_mode));
 			if (o->l && d->dirent->d_type == DT_LNK)

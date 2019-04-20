@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 01:22:49 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/20 00:06:05 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/20 03:30:12 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,14 @@ int		main(int ac, char **av)
 			free_dir_content(d);
 		}
 		else
-			ft_printf("ls: %s: Permission denied\n", ft_strrchr(a->arg, '/') + 1);
+		{
+			char *base = ft_strrchr(a->arg, '/');
+			base = base ? base + 1 : a->arg;
+			write(2, "ls: ", 4);
+			write(2, base, ft_strlen(base));
+			write(2, ": ", 2);
+			perror("");
+		}
 		a = a->next;
 	}
 	free_args(at);
