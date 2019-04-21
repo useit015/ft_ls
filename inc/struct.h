@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 21:05:01 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/20 02:10:23 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/21 01:32:08 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ typedef struct		s_options
 	unsigned int	rr:1;
 	unsigned int	f:1;
 	unsigned int	ff:1;
-	unsigned int	many:20;
+	unsigned int	many:10;
+	char			illegal;
 }					t_options;
 
 typedef struct		s_max
@@ -40,13 +41,14 @@ typedef struct		s_max
 	unsigned int	major:4;
 	unsigned int	minor:4;
 	unsigned int	size:8;
-	unsigned int	total;
 }					t_max;
 
 typedef struct		s_args
 {
 	char			*arg;
+	mode_t			mode;
 	int				total;
+	long			time;
 	struct s_args	*next;
 }					t_args;
 
@@ -58,6 +60,7 @@ typedef struct		s_minmaj
 
 typedef struct		s_dir
 {
+	char			*name;
 	char			*link_target;
 	t_minmaj		*m;
 	t_dirent		*dirent;

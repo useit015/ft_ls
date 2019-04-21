@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 01:22:43 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/20 02:36:09 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/21 04:13:55 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,20 @@
 # include <time.h>
 # include <stdio.h>
 # include <errno.h>
-# include "struct.h"
-# include "colors.h"
 # include <dirent.h>
 # include <sys/stat.h>
 # include <sys/types.h>
+# include "colors.h"
+# include "struct.h"
 # include "../libft/libft.h"
+# define SIX_MONTHS 15780000
+# define ALLOC(type, size) (type *)malloc(sizeof(type) * size)
+# define PROTEC(x, y) if (!(x = y)) return
 
+void	print_file(t_dir *d, t_options *o, t_max *m);
 void	init_max(t_max *m);
+int		is_dir(char *d);
+void	ft_err(char *name);
 void	set_max(t_max *m, t_dir *d);
 t_dir	*sort_content(t_dir *d);
 t_dir	*rev_content(t_dir *d);
@@ -41,7 +47,7 @@ void	print_rights(mode_t m);
 t_dir	*get_stat(t_dir *d, t_args *a, t_options *o, t_max *m);
 void	print_dir_content(t_dir *d, t_args *a, t_options *o, t_max *m);
 t_dir	*get_dir_content(t_args *a);
-t_args	*parse_args(int ac, char **av, int i);
+t_args	*parse_args(int ac, char **av, int i, t_options *o);
 int		parse_options(int ac, char **av, t_options *o);
 
 #endif

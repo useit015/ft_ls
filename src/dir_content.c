@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:39:23 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/20 03:03:35 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/21 00:54:43 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void			ft_swap(void **a, void **b)
 t_dir	*sort_time(t_dir *d)
 {
 	if (!d)
-			return (NULL);
+		return (NULL);
 	t_dir *head = d;
 	while (1)
 	{
@@ -33,6 +33,7 @@ t_dir	*sort_time(t_dir *d)
 			if (d->fs && d->next->fs && d->fs->st_mtimespec.tv_sec < d->next->fs->st_mtimespec.tv_sec)
 			{
 				ft_swap((void *)&d->dirent, (void *)&d->next->dirent);
+				ft_swap((void *)&d->name, (void *)&d->next->name);
 				ft_swap((void *)&d->fs, (void *)&d->next->fs);
 				ft_swap((void *)&d->p, (void *)&d->next->p);
 				ft_swap((void *)&d->g, (void *)&d->next->g);
@@ -60,6 +61,7 @@ t_dir	*sort_content(t_dir *d)
 		{
 			if (ft_strcmp(d->dirent->d_name, d->next->dirent->d_name) > 0)
 			{
+				ft_swap((void *)&d->name, (void *)&d->next->name);
 				ft_swap((void *)&d->dirent, (void *)&d->next->dirent);
 				ft_swap((void *)&d->fs, (void *)&d->next->fs);
 				ft_swap((void *)&d->p, (void *)&d->next->p);
@@ -98,24 +100,20 @@ t_dir		*get_dir_content(t_args *a)
 	t_dir		*head;
 	t_dir		*prev;
 
-	if (!(dir = opendir(a->arg)))
-		return (NULL);
-	if (!(cur = (t_dir *)malloc(sizeof(t_dir))))
-		return (NULL);
-	if (!(cur->dirent = (t_dirent *)malloc(sizeof(t_dirent))))
-		return (NULL);
+	PROTEC(dir, opendir(a->arg))(NULL);
+	PROTEC(cur, ALLOC(t_dir, 1))(NULL);
+	PROTEC(cur->dirent, ALLOC(t_dirent, 1))(NULL);
 	head = cur;
 	while (ft_memcpy(cur->dirent, readdir(dir), sizeof(t_dirent)))
 	{
-		if (!(cur->next = (t_dir *)malloc(sizeof(t_dir))))
-			return (NULL);
+		cur->name = cur->dirent->d_name;
+		PROTEC(cur->next, ALLOC(t_dir, 1))(NULL);
 		prev = cur;
 		cur = cur->next;
-		if (!(cur->dirent = (t_dirent *)malloc(sizeof(t_dirent))))
-			return (NULL);
+		PROTEC(cur->dirent, ALLOC(t_dirent, 1))(NULL);
 	}
-	free(cur->dirent);
-	free(cur);
+	ft_memdel((void **)&cur->dirent);
+	ft_memdel((void **)&cur);
 	prev->next = NULL;
 	(void)closedir(dir);
 	return (head);
@@ -157,7 +155,7 @@ char		*format_date(long int t)
 	now = time(NULL);
 	s = ctime(&t);
 	y = ft_trim(ft_strrchr(s, ' '));
-	if (now - t > 15780000)
+	if (now - t > SIX_MONTHS || t - now > SIX_MONTHS)
 	{
 		s[11] = ' ';
 		s[12] = 0;
@@ -181,41 +179,51 @@ int			hidden(char *n, t_options *o)
 	return (0);
 }
 
+void		print_file(t_dir *d, t_options *o, t_max *m)
+{
+	// char *s = get_color_start(d->fs->st_mode);
+	// char *e = get_color_end(d->fs->st_mode);
+	if (o->l)
+	{
+		char *date = format_date(d->fs->st_mtimespec.tv_sec);
+		print_rights(d->fs->st_mode);
+		ft_printf("%*d", m->link + 2, d->fs->st_nlink);
+		if (!o->g)
+			ft_printf(" %-*s ", m->user, d->p->pw_name);
+		ft_printf(" %-*s", m->group, d->g->gr_name);
+		if (S_ISBLK(d->fs->st_mode) || S_ISCHR(d->fs->st_mode))
+			ft_printf(" %*d, %*d", m->major, d->m->major, m->minor, d->m->minor);
+		else
+			ft_printf("%*lld", m->size + 2, d->fs->st_size);
+		ft_printf(" %s ", date);
+		free(date);
+	}
+	// ft_printf("%s%s%s", s, d->name, e);
+	ft_printf(d->name);
+	if (o->ff)
+		ft_printf("%s", get_suff(d->fs->st_mode));
+	if (o->l && S_ISLNK(d->fs->st_mode))
+		ft_printf(" -> %s", d->link_target);
+	ft_printf("\n");
+}
+
+int			is_full(t_dir *d, t_options *o)
+{
+	while (d && d ->name && hidden(d->name, o))
+		d = d->next;
+	return (d ? 1 : 0);
+}
+
 void		print_dir_content(t_dir *d, t_args *a, t_options *o, t_max *m)
 {
-	if (o->l)
+	if (o->many > 1)
+		ft_printf("%s:\n", a->arg);
+	if (o->l && is_full(d, o))
 		ft_printf("total %d\n", a->total);
 	while (d && d->dirent)
 	{
-		if (!hidden(d->dirent->d_name, o) && d->fs)
-		{
-			// char *s = get_color_start(d->fs->st_mode);
-			// char *e = get_color_end(d->fs->st_mode);
-			if (o->l)
-			{
-				char *date = format_date(d->fs->st_mtimespec.tv_sec);
-				print_rights(d->fs->st_mode);
-				ft_printf("%*d", m->link + 2, d->fs->st_nlink);
-				if (!o->g)
-					ft_printf(" %-*s ", m->user, d->p->pw_name);
-				ft_printf(" %-*s", m->group, d->g->gr_name);
-				if (d->dirent->d_type == DT_BLK || d->dirent->d_type == DT_CHR)
-					ft_printf(" %*d, %*d", m->major, d->m->major, m->minor, d->m->minor);
-				else
-					ft_printf("%*lld", m->size + 2, d->fs->st_size);
-				ft_printf(" %s ", date);
-				free(date);
-			}
-			// ft_printf("%s%s%s", s, d->dirent->d_name, e);
-			ft_printf(d->dirent->d_name);
-			if (o->ff)
-				ft_printf("%s", get_suff(d->fs->st_mode));
-			if (o->l && d->dirent->d_type == DT_LNK)
-				ft_printf(" -> %s", d->link_target);
-			ft_printf("\n");
-		}
+		if (!hidden(d->name, o) && d->fs)
+			print_file(d, o, m);
 		d = d->next;
 	}
-	if (a->next && a->next->arg)
-		ft_printf("\n");
 }
