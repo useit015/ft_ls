@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:39:23 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/22 04:03:11 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/23 00:07:00 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,8 +154,16 @@ t_dir		*get_dir_content(t_args *a)
 }
 
 
-void	print_rights(mode_t m)
+void	print_rights(t_dir *d)
 {
+	mode_t		m;
+	acl_t		acl;
+	acl_entry_t	tmp;
+	ssize_t		xattr;
+
+	xattr = 0;
+	acl = NULL;
+	m = d->fs->st_mode;
 	(void)ft_printf("%c", get_filetype(m));
 	(void)ft_printf(m & S_IRUSR ? "r" : "-");
 	(void)ft_printf(m & S_IWUSR ? "w" : "-");
@@ -175,6 +183,16 @@ void	print_rights(mode_t m)
 		(void)ft_printf(m & S_IXOTH ? "t" : "T");
 	else
 		(void)ft_printf(m & S_IXOTH ? "x" : "-");
+	acl = acl_get_link_np(d->name, ACL_TYPE_EXTENDED);
+	if (acl && acl_get_entry(acl, ACL_FIRST_ENTRY, &tmp) == -1) {
+		acl_free(acl);
+		acl = NULL;
+	}
+	xattr = listxattr(d->name, NULL, 0, XATTR_NOFOLLOW);
+	if (xattr > 0)
+		(void)ft_printf("@");
+	else
+		(void)ft_printf(acl ? "+" : " ");
 }
 
 char		*ft_trim(char *s)
@@ -231,8 +249,8 @@ void		print_file(t_dir *d, t_options *o, t_max *m)
 	if (o->l)
 	{
 		char *date = format_date(get_time(d->fs, o), o);
-		print_rights(d->fs->st_mode);
-		ft_printf("%*d", m->link + 2, d->fs->st_nlink);
+		print_rights(d);
+		ft_printf("%*d", m->link + 1, d->fs->st_nlink);
 		if (!o->g)
 			ft_printf(" %-*s ", m->user, d->p->pw_name);
 		if (!o->o)

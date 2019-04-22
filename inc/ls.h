@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 01:22:43 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/22 03:26:20 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/23 00:00:01 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@
 # include <dirent.h>
 # include <sys/stat.h>
 # include <sys/types.h>
+# include <sys/xattr.h>
+# include <sys/acl.h>
 # include "colors.h"
 # include "struct.h"
 # include "../libft/libft.h"
@@ -45,7 +47,7 @@ char	*get_color_start(mode_t m);
 char	*get_color_end(mode_t m);
 char	get_filetype(mode_t m);
 void	ft_swap(void **a, void **b);
-void	print_rights(mode_t m);
+void	print_rights(t_dir *d);
 void	ft_ls(t_args *a, t_options *o, t_max *m);
 t_dir	*get_stat(t_dir *d, t_args *a, t_options *o, t_max *m);
 void	print_dir_content(t_dir *d, t_args *a, t_options *o, t_max *m);
