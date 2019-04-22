@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/14 04:55:22 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/17 00:14:31 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/22 04:03:41 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,12 +73,24 @@ char	*get_suff(mode_t m)
 		return ("/");
 	else if (S_ISLNK(m))
 		return ("@");
-	else if (m & S_IXUSR)
-		return ("*");
 	else if (S_ISFIFO(m))
 		return ("|");
 	else if (S_ISSOCK(m))
 		return ("=");
+	else if (m & (S_IXUSR | S_IXGRP | S_IXOTH))
+		return ("*");
 	else
 		return ("");
+}
+
+long	get_time(t_stat *s, t_options *o)
+{
+	if (o->u)
+		return (s->st_atimespec.tv_sec);
+	else if (o->c)
+		return (s->st_ctimespec.tv_sec);
+	else if (o->uu)
+		return (s->st_birthtimespec.tv_sec);
+	else
+		return (s->st_mtimespec.tv_sec);
 }

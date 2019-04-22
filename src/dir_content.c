@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:39:23 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/21 00:54:43 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/22 04:03:11 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void			ft_swap(void **a, void **b)
 	*b = t;
 }
 
-t_dir	*sort_time(t_dir *d)
+t_dir	*sort_size(t_dir *d)
 {
 	if (!d)
 		return (NULL);
@@ -30,7 +30,41 @@ t_dir	*sort_time(t_dir *d)
 		d = head;
 		while (d->next)
 		{
-			if (d->fs && d->next->fs && d->fs->st_mtimespec.tv_sec < d->next->fs->st_mtimespec.tv_sec)
+			if (d->fs->st_size < d->next->fs->st_size)
+			{
+				ft_swap((void *)&d->dirent, (void *)&d->next->dirent);
+				ft_swap((void *)&d->name, (void *)&d->next->name);
+				ft_swap((void *)&d->fs, (void *)&d->next->fs);
+				ft_swap((void *)&d->p, (void *)&d->next->p);
+				ft_swap((void *)&d->g, (void *)&d->next->g);
+				ft_swap((void *)&d->m, (void *)&d->next->m);
+				ft_swap((void *)&d->link_target, (void *)&d->next->link_target);
+				flag = 0;
+			}
+			d = d->next;
+		}
+		if (flag)
+			return (head);
+	}
+}
+
+t_dir	*sort_time(t_dir *d, t_options *o)
+{
+	long	c;
+	long	n;
+
+	if (!d)
+		return (NULL);
+	t_dir *head = d;
+	while (1)
+	{
+		int flag = 1;
+		d = head;
+		while (d->next)
+		{
+			c = get_time(d->fs, o);
+			n = get_time(d->next->fs, o);
+			if (c < n)
 			{
 				ft_swap((void *)&d->dirent, (void *)&d->next->dirent);
 				ft_swap((void *)&d->name, (void *)&d->next->name);
@@ -125,13 +159,22 @@ void	print_rights(mode_t m)
 	(void)ft_printf("%c", get_filetype(m));
 	(void)ft_printf(m & S_IRUSR ? "r" : "-");
 	(void)ft_printf(m & S_IWUSR ? "w" : "-");
-	(void)ft_printf(m & S_IXUSR ? "x" : "-");
+	if (m & S_ISUID)
+		(void)ft_printf(m & S_IXUSR ? "s" : "S");
+	else
+		(void)ft_printf(m & S_IXUSR ? "x" : "-");
 	(void)ft_printf(m & S_IRGRP ? "r" : "-");
 	(void)ft_printf(m & S_IWGRP ? "w" : "-");
-	(void)ft_printf(m & S_IXGRP ? "x" : "-");
+	if (m & S_ISGID)
+		(void)ft_printf(m & S_IXGRP ? "s" : "S");
+	else
+		(void)ft_printf(m & S_IXGRP ? "x" : "-");
 	(void)ft_printf(m & S_IROTH ? "r" : "-");
 	(void)ft_printf(m & S_IWOTH ? "w" : "-");
-	(void)ft_printf(m & S_IXOTH ? "x" : "-");
+	if (m & S_ISVTX)
+		(void)ft_printf(m & S_IXOTH ? "t" : "T");
+	else
+		(void)ft_printf(m & S_IXOTH ? "x" : "-");
 }
 
 char		*ft_trim(char *s)
@@ -146,7 +189,7 @@ char		*ft_trim(char *s)
 	return (s);
 }
 
-char		*format_date(long int t)
+char		*format_date(long int t, t_options *o)
 {
 	char	*s;
 	char	*y;
@@ -155,7 +198,9 @@ char		*format_date(long int t)
 	now = time(NULL);
 	s = ctime(&t);
 	y = ft_trim(ft_strrchr(s, ' '));
-	if (now - t > SIX_MONTHS || t - now > SIX_MONTHS)
+	if (o->tt)
+		s = ft_strdup(s + 4);
+	else if (now - t > SIX_MONTHS || t - now > SIX_MONTHS)
 	{
 		s[11] = ' ';
 		s[12] = 0;
@@ -172,7 +217,7 @@ char		*format_date(long int t)
 int			hidden(char *n, t_options *o)
 {
 
-	if (o->aa && (!ft_strcmp(n, ".") || !ft_strcmp(n, "..")))
+	if (!o->a && o->aa && (!ft_strcmp(n, ".") || !ft_strcmp(n, "..")))
 		return (1);
 	if ((!*n || *n == '.') && !o->a && !o->aa)
 		return (1);
@@ -185,16 +230,19 @@ void		print_file(t_dir *d, t_options *o, t_max *m)
 	// char *e = get_color_end(d->fs->st_mode);
 	if (o->l)
 	{
-		char *date = format_date(d->fs->st_mtimespec.tv_sec);
+		char *date = format_date(get_time(d->fs, o), o);
 		print_rights(d->fs->st_mode);
 		ft_printf("%*d", m->link + 2, d->fs->st_nlink);
 		if (!o->g)
 			ft_printf(" %-*s ", m->user, d->p->pw_name);
-		ft_printf(" %-*s", m->group, d->g->gr_name);
+		if (!o->o)
+			ft_printf(" %-*s ", m->group, d->g->gr_name);
+		if (o->g && o->o)
+			ft_printf("  ");
 		if (S_ISBLK(d->fs->st_mode) || S_ISCHR(d->fs->st_mode))
-			ft_printf(" %*d, %*d", m->major, d->m->major, m->minor, d->m->minor);
+			ft_printf("%*d, %*d ", m->major, d->m->major, m->minor, d->m->minor);
 		else
-			ft_printf("%*lld", m->size + 2, d->fs->st_size);
+			ft_printf("%*lld", m->size + 1, d->fs->st_size);
 		ft_printf(" %s ", date);
 		free(date);
 	}
@@ -202,6 +250,8 @@ void		print_file(t_dir *d, t_options *o, t_max *m)
 	ft_printf(d->name);
 	if (o->ff)
 		ft_printf("%s", get_suff(d->fs->st_mode));
+	else if (o->p && S_ISDIR(d->fs->st_mode))
+		ft_printf("/");
 	if (o->l && S_ISLNK(d->fs->st_mode))
 		ft_printf(" -> %s", d->link_target);
 	ft_printf("\n");

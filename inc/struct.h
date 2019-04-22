@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 21:05:01 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/21 01:32:08 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/22 03:38:08 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,21 @@ typedef struct		s_options
 {
 	unsigned int	l:1;
 	unsigned int	t:1;
+	unsigned int	c:1;
+	unsigned int	d:1;
+	unsigned int	p:1;
 	unsigned int	g:1;
+	unsigned int	o:1;
 	unsigned int	a:1;
 	unsigned int	aa:1;
 	unsigned int	r:1;
 	unsigned int	rr:1;
 	unsigned int	f:1;
 	unsigned int	ff:1;
+	unsigned int	u:1;
+	unsigned int	uu:1;
+	unsigned int	ss:1;
+	unsigned int	tt:1;
 	unsigned int	many:10;
 	char			illegal;
 }					t_options;

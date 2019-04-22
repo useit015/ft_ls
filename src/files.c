@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/13 23:16:39 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/21 01:41:04 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/22 03:12:07 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,9 @@ t_dir	*get_stat(t_dir *d, t_args *a, t_options *o, t_max *m)
 	{
 		head = sort_content(head);
 		if (o->t)
-			head = sort_time(head);
+			head = sort_time(head, o);
+		if (o->ss)
+			head = sort_size(head);
 		if (o->r)
 			head = rev_content(head);
 	}

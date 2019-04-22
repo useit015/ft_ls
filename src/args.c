@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:18:06 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/21 04:13:47 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/22 02:25:45 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,26 @@ static t_args	*sort_args(t_args *a)
 	}
 }
 
+void			sort_tab(int ac, char **av, int i)
+{
+	if (!av || !*av || !ac)
+		return ;
+	while (1)
+	{
+		int flag = 1;
+		while (++i < ac - 1)
+		{
+			if (ft_strcmp(av[i], av[i + 1]) > 0)
+			{
+				ft_swap((void *)&av[i], (void *)&av[i + 1]);
+				flag = 0;
+			}
+		}
+		if (flag)
+			return ;
+	}
+}
+
 t_args			*parse_args(int ac, char **av, int i, t_options *o)
 {
 	t_args	*head;
@@ -115,6 +135,8 @@ t_args			*parse_args(int ac, char **av, int i, t_options *o)
 	f = 1;
 	PROTEC(cur, ALLOC(t_args, 1))(NULL);
 	head = cur;
+	if (!o->t && !o->f)
+		sort_tab(ac, av, i - 1);
 	cur->arg = ft_strdup(i >= ac && f ? "." : av[i]);
 	while (1)
 	{
@@ -130,21 +152,12 @@ t_args			*parse_args(int ac, char **av, int i, t_options *o)
 			break ;
 	}
 	cur->mode = s.st_mode;
-	cur->time = s.st_mtimespec.tv_sec;
+	cur->time = get_time(&s, o);
 	cur->next = NULL;
 	while (++i < ac)
 	{
 		PROTEC(cur->next, ALLOC(t_args, 1))(NULL);
 		cur = cur->next;
-		// cur->arg = ft_strdup(av[i]);
-		// lstat(cur->arg, &s);
-		// if (!S_ISLNK(s.st_mode) && stat(cur->arg, &s) < 0)
-		// {
-		// 	ft_err(av[i]);
-		// 	i++;
-		// 	free(cur->arg);
-		// 	continue ;
-		// }
 		cur->arg = ft_strdup(av[i]);
 		while (i < ac)
 		{
@@ -157,7 +170,7 @@ t_args			*parse_args(int ac, char **av, int i, t_options *o)
 				break ;
 		}
 		cur->mode = s.st_mode;
-		cur->time = s.st_mtimespec.tv_sec;
+		cur->time = get_time(&s, o);
 		cur->next = NULL;
 	}
 	if (!o->f)

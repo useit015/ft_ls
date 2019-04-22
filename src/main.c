@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 01:22:49 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/21 04:15:01 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/22 04:11:29 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,11 @@ int		is_dir(char *d)
 
 void	ft_err(char *name)
 {
-	write(2, "ft_ls: ", 7);
+	write(2, "ls: ", 4);
 	write(2, name, ft_strlen(name));
 	write(2, ": ", 2);
 	perror("");
 }
-void	ft_ls(t_args *a, t_options *o, t_max *m);
 
 void	recurse(t_dir *d, t_args *a, t_options *o)
 {
@@ -72,7 +71,7 @@ void	recurse(t_dir *d, t_args *a, t_options *o)
 		{
 			new.arg = ft_strjoin(base, d->name);
 			new.mode = d->fs->st_mode;
-			new.time = d->fs->st_mtimespec.tv_sec;
+			new.time = get_time(d->fs, o);
 			ft_printf("\n%s:\n", new.arg);
 			ft_ls(&new, o, &m);
 		}
@@ -85,7 +84,7 @@ void	ft_ls(t_args *a, t_options *o, t_max *m)
 	t_dir		*d;
 	char		*base;
 
-	if (S_ISDIR(a->mode) || (!o->l && is_dir(a->arg)))
+	if ((S_ISDIR(a->mode) || (!o->l && is_dir(a->arg))) && !o->d)
 	{
 		if ((d = get_dir_content(a)))
 		{
@@ -133,7 +132,7 @@ void	ft_ls_args(t_args *a, t_options *o, t_max *m)
 	while (a && a->arg)
 	{
 		ft_ls(a, o, m);
-		if (a->next && a->next->arg && is_dir(a->next->arg))
+		if (a->next && a->next->arg && is_dir(a->next->arg) && !o->d)
 			ft_printf("\n");
 		a = a->next;
 	}
@@ -148,10 +147,10 @@ int		main(int ac, char **av)
 
 	if ((i = parse_options(ac, av, &o)) == -1)
 	{
-		write(2, "ft_ls: illegal option -- ", 25);
+		write(2, "ls: illegal option -- ", 22);
 		write(2, &(o.illegal), 1);
 		write(2, "\n", 1);
-		write(2, "usage: ls [-AFRafglrt] [file ...]\n", 34);
+		write(2, "usage: ls [-AFRSUTacdfgloprtu1] [file ...]\n", 43);
 		return (1);
 	}
 	a = parse_args(ac, av, i, &o);
