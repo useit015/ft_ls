@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 01:22:43 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/23 00:00:01 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/24 05:22:30 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,11 @@
 # define ALLOC(type, size) (type *)malloc(sizeof(type) * size)
 # define PROTEC(x, y) if (!(x = y)) return
 
-void	print_file(t_dir *d, t_options *o, t_max *m);
+void	init_options(t_options *o);
+void	set_max(t_max *m, t_dir *d);
+void	free_dir_content(t_dir *d);
+void	ft_ls_args(t_args *a, t_options *o, t_max *m);
+void	print_file(t_dir *d, t_args *a, t_options *o, t_max *m);
 void	init_max(t_max *m);
 int		is_dir(char *d);
 void	ft_err(char *name);
@@ -47,9 +51,8 @@ char	*get_color_start(mode_t m);
 char	*get_color_end(mode_t m);
 char	get_filetype(mode_t m);
 void	ft_swap(void **a, void **b);
-void	print_rights(t_dir *d);
 void	ft_ls(t_args *a, t_options *o, t_max *m);
-t_dir	*get_stat(t_dir *d, t_args *a, t_options *o, t_max *m);
+t_dir	*prepare_list(t_dir *d, t_args *a, t_options *o, t_max *m);
 void	print_dir_content(t_dir *d, t_args *a, t_options *o, t_max *m);
 t_dir	*get_dir_content(t_args *a);
 t_args	*parse_args(int ac, char **av, int i, t_options *o);

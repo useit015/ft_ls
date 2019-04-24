@@ -6,17 +6,17 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 21:05:01 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/22 03:38:08 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/24 04:54:48 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef STRUCT_H
 # define STRUCT_H
 
-typedef struct dirent t_dirent;
-typedef struct stat t_stat;
-typedef struct passwd t_passwd;
-typedef struct group t_group;
+typedef struct dirent	t_dirent;
+typedef struct stat		t_stat;
+typedef struct passwd	t_passwd;
+typedef struct group	t_group;
 
 typedef struct		s_options
 {
@@ -46,8 +46,8 @@ typedef struct		s_max
 	unsigned int	link:4;
 	unsigned int	user:4;
 	unsigned int	group:4;
-	unsigned int	major:4;
-	unsigned int	minor:4;
+	unsigned int	maj:4;
+	unsigned int	min:4;
 	unsigned int	size:8;
 }					t_max;
 

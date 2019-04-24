@@ -6,94 +6,81 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/13 23:16:39 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/22 03:12:07 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/24 05:18:45 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ls.h"
 
-static int	ft_intlen(long long int n)
+void	get_min_maj(t_dir *d)
 {
-	int		i;
+	int		type;
 
-	i = 1;
-	while (n /= 10)
-		i++;
-	return (i);
+	type = d->dirent->d_type ? d->dirent->d_type : 0;
+	PROTEC(d->m, ALLOC(t_minmaj, 1));
+	if (type == DT_BLK || type == DT_CHR)
+	{
+		d->m->major = major(d->fs->st_rdev);
+		d->m->minor = minor(d->fs->st_rdev);
+	}
+	else
+		ft_memdel((void **)&d->m);
 }
 
-static int	max(int a, int b)
+int		get_stat(t_dir *d, t_args *a)
 {
-	return (a >= b ? a : b);
+	char	*path;
+	char	*tmp;
+
+	tmp = ft_strjoin(a->arg, "/");
+	path = ft_strjoin(tmp, d->dirent->d_name);
+	PROTEC(d->fs, ALLOC(t_stat, 1))(0);
+	if (d->dirent->d_type == DT_LNK)
+	{
+		if (lstat(path, d->fs) < 0)
+			return (0);
+		d->link_target = ft_strnew(d->fs->st_size + 1);
+		if (readlink(path, d->link_target, d->fs->st_size) == -1)
+			return (0);
+	}
+	else
+	{
+		d->link_target = ft_strnew(1);
+		if (stat(path, d->fs) < 0)
+			return (0);
+	}
+	ft_memdel((void **)&path);
+	ft_memdel((void **)&tmp);
+	return (1);
 }
 
-void	init_max(t_max *m)
+t_dir	*sort(t_dir *d, t_options *o)
 {
-	m->link = 0;
-	m->user = 0;
-	m->group = 0;
-	m->major = 0;
-	m->minor = 0;
-	m->size = 0;
+	if (!o->f)
+	{
+		d = sort_content(d);
+		if (o->t)
+			d = sort_time(d, o);
+		if (o->ss)
+			d = sort_size(d);
+		if (o->r)
+			d = rev_content(d);
+	}
+	return (d);
 }
 
-void	set_max(t_max *m, t_dir *d)
+t_dir	*prepare_list(t_dir *d, t_args *a, t_options *o, t_max *m)
 {
-	m->link = max(ft_intlen(d->fs->st_nlink), m->link);
-	m->user = max(ft_strlen(d->p->pw_name), m->user);
-	m->group = max(ft_strlen(d->g->gr_name), m->group);
-	m->size = max(ft_intlen(d->fs->st_size), m->size);
-	m->major = d->m ? max(ft_intlen(d->m->major), m->major) : 0;
-	m->minor = d->m ? max(ft_intlen(d->m->minor), m->minor) : 0;
-	m->size = max(m->minor + m->major + 1, m->size);
-}
-
-int		file_type(int t)
-{
-	return (t == DT_FIFO || t == DT_CHR || t == DT_BLK || t == DT_REG || t == DT_DIR || t == DT_LNK || t == DT_SOCK || t == DT_WHT);
-}
-
-t_dir	*get_stat(t_dir *d, t_args *a, t_options *o, t_max *m)
-{
-	char *path;
-	char *tmp;
 	t_dir	*head;
 
 	head = d;
-	tmp = ft_strjoin(a->arg, "/");
 	init_max(m);
 	a->total = 0;
 	while (d)
 	{
-		if (!file_type(d->dirent->d_type))
-		{
-			d = d->next;
-			continue ;
-		}
-		path = ft_strjoin(tmp, d->dirent->d_name);
-		PROTEC(d->fs, ALLOC(t_stat, 1))(NULL);
-		if (d->dirent->d_type == DT_LNK)
-		{
-			if (lstat(path, d->fs) < 0)
-				break ;
-			d->link_target = ft_strnew(d->fs->st_size + 1);
-			if (readlink(path, d->link_target, d->fs->st_size) == -1)
-				break ;
-		}
-		else
-		{
-			d->link_target = ft_strnew(1);
-			if (stat(path, d->fs) < 0)
-				break ;
-		}
-		PROTEC(d->m, ALLOC(t_minmaj, 1))(NULL);
-		if (d->dirent->d_type && (d->dirent->d_type == DT_BLK || d->dirent->d_type == DT_CHR))
-		{
-			d->m->major = major(d->fs->st_rdev);
-			d->m->minor = minor(d->fs->st_rdev);
-		}
-		else
-			ft_memdel((void **)&d->m);
+		if (!get_stat(d, a))
+			break ;
+		get_min_maj(d);
 		d->p = getpwuid(d->fs->st_uid);
 		d->g = getgrgid(d->fs->st_gid);
 		if (!hidden(d->dirent->d_name, o))
@@ -101,19 +88,7 @@ t_dir	*get_stat(t_dir *d, t_args *a, t_options *o, t_max *m)
 			set_max(m, d);
 			a->total += d->fs->st_blocks;
 		}
-		ft_memdel((void **)&path);
 		d = d->next;
 	}
-	ft_memdel((void **)&tmp);
-	if (!o->f)
-	{
-		head = sort_content(head);
-		if (o->t)
-			head = sort_time(head, o);
-		if (o->ss)
-			head = sort_size(head);
-		if (o->r)
-			head = rev_content(head);
-	}
-	return (head);
+	return (sort(head, o));
 }
