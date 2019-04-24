@@ -6,13 +6,13 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 03:37:51 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/24 05:20:52 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/24 05:43:39 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ls.h"
 
-static void	fill_options_2(t_options *o, char f)
+static void	fill_options_2(t_o *o, char f)
 {
 	if (f == 'd')
 		o->d = 1;
@@ -38,7 +38,7 @@ static void	fill_options_2(t_options *o, char f)
 	}
 }
 
-static void	fill_options_1(t_options *o, char f)
+static void	fill_options_1(t_o *o, char f)
 {
 	if (f == 'c')
 	{
@@ -66,7 +66,7 @@ static void	fill_options_1(t_options *o, char f)
 		fill_options_2(o, f);
 }
 
-static void	fill_options(t_options *o, char f)
+static void	fill_options(t_o *o, char f)
 {
 	if (f == 'l')
 		o->l = 1;
@@ -91,7 +91,7 @@ static void	fill_options(t_options *o, char f)
 		fill_options_1(o, f);
 }
 
-static int	parse_chars(char *s, t_options *o)
+static int	parse_chars(char *s, t_o *o)
 {
 	while (*s)
 	{
@@ -106,12 +106,12 @@ static int	parse_chars(char *s, t_options *o)
 	return (1);
 }
 
-int			parse_options(int ac, char **av, t_options *o)
+int			parse_options(int ac, char **av, t_o *o)
 {
 	int		i;
 
 	i = 0;
-	init_options(o);
+	init_o(o);
 	while (++i < ac)
 	{
 		if (*av[i] == '-' && *(av[i] + 1))

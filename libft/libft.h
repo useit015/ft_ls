@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/05 03:37:18 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/24 05:15:06 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/24 05:47:46 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ char				*ft_strtrim(char const *s);
 char				*ft_strlowcase(char *str);
 char				*ft_strupcase(char *str);
 char				*ft_strnew(size_t size);
+char				*ft_trim(char *s);
 char				*ft_itoa(int n);
 void				ft_putnbr(int nb);
 void				ft_putchar(char c);

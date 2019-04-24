@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 01:22:49 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/24 02:22:50 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/24 05:46:35 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	ft_err(char *name)
 int		main(int ac, char **av)
 {
 	int			i;
-	t_options	o;
+	t_o			o;
 	t_max		m;
 	t_args		*a;
 

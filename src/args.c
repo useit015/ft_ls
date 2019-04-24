@@ -6,113 +6,11 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:18:06 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/24 03:02:21 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/24 05:58:25 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ls.h"
-
-t_args			*rev_args(t_args *d)
-{
-	t_args *prev;
-	t_args *next;
-
-	if (!d)
-		return (NULL);
-	prev = NULL;
-	next = NULL;
-	while (d)
-	{
-		next = d->next;
-		d->next = prev;
-		prev = d;
-		d = next;
-	}
-	return (prev);
-}
-
-t_args			*sort_types(t_args *a)
-{
-	int		flag;
-	t_args	*head;
-
-	if (!a)
-		return (NULL);
-	head = a;
-	while (1)
-	{
-		flag = 1;
-		a = head;
-		while (a->next)
-		{
-			if (is_dir(a->arg) && !is_dir(a->next->arg))
-			{
-				ft_swap((void *)&a->arg, (void *)&a->next->arg);
-				ft_swap((void *)&a->mode, (void *)&a->next->mode);
-				ft_swap((void *)&a->time, (void *)&a->next->time);
-				flag = 0;
-			}
-			a = a->next;
-		}
-		if (flag)
-			return (head);
-	}
-}
-
-t_args			*sort_args_time(t_args *a)
-{
-	int		flag;
-	t_args	*head;
-
-	if (!a)
-		return (NULL);
-	head = a;
-	while (1)
-	{
-		flag = 1;
-		a = head;
-		while (a->next)
-		{
-			if (a->time < a->next->time)
-			{
-				ft_swap((void *)&a->arg, (void *)&a->next->arg);
-				ft_swap((void *)&a->mode, (void *)&a->next->mode);
-				ft_swap((void *)&a->time, (void *)&a->next->time);
-				flag = 0;
-			}
-			a = a->next;
-		}
-		if (flag)
-			return (head);
-	}
-}
-
-t_args			*sort_args(t_args *a)
-{
-	int		flag;
-	t_args	*head;
-
-	if (!a)
-		return (NULL);
-	head = a;
-	while (1)
-	{
-		flag = 1;
-		a = head;
-		while (a->next && a->next->arg)
-		{
-			if (ft_strcmp(a->arg, a->next->arg) > 0)
-			{
-				ft_swap((void *)&a->arg, (void *)&a->next->arg);
-				ft_swap((void *)&a->mode, (void *)&a->next->mode);
-				flag = 0;
-			}
-			a = a->next;
-		}
-		if (flag)
-			return (head);
-	}
-}
 
 void			sort_tab(int ac, char **av, int i)
 {
@@ -136,7 +34,7 @@ void			sort_tab(int ac, char **av, int i)
 	}
 }
 
-t_args			*make_arg(char **av, int ac, t_options *o, int *i)
+t_args			*make_arg(char **av, int ac, t_o *o, int *i)
 {
 	t_args	*cur;
 	t_stat	s;
@@ -164,7 +62,7 @@ t_args			*make_arg(char **av, int ac, t_options *o, int *i)
 	return (cur);
 }
 
-t_args			*parse_args(int ac, char **av, int i, t_options *o)
+t_args			*parse_args(int ac, char **av, int i, t_o *o)
 {
 	t_args	*head;
 	t_args	*cur;
@@ -181,11 +79,11 @@ t_args			*parse_args(int ac, char **av, int i, t_options *o)
 	cur = head;
 	if (!o->f)
 	{
-		head = sort_args(head);
+		head = sort_args(head, cmp_arg_name);
 		if (o->t)
-			head = sort_args_time(head);
+			head = sort_args(head, cmp_arg_time);
 		if (o->r)
 			head = rev_args(head);
 	}
-	return (sort_types(head));
+	return (sort_args(head, cmp_arg_type));
 }

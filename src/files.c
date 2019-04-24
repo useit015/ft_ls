@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/13 23:16:39 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/24 05:18:45 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/24 05:43:39 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,22 +54,22 @@ int		get_stat(t_dir *d, t_args *a)
 	return (1);
 }
 
-t_dir	*sort(t_dir *d, t_options *o)
+t_dir	*sort(t_dir *d, t_o *o)
 {
 	if (!o->f)
 	{
-		d = sort_content(d);
+		d = sort_list(d, o, cmp_name);
 		if (o->t)
-			d = sort_time(d, o);
+			d = sort_list(d, o, cmp_time);
 		if (o->ss)
-			d = sort_size(d);
+			d = sort_list(d, o, cmp_size);
 		if (o->r)
 			d = rev_content(d);
 	}
 	return (d);
 }
 
-t_dir	*prepare_list(t_dir *d, t_args *a, t_options *o, t_max *m)
+t_dir	*prepare_list(t_dir *d, t_args *a, t_o *o, t_max *m)
 {
 	t_dir	*head;
 

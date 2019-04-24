@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/14 04:55:22 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/23 01:10:40 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/24 05:43:39 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ char	*get_suff(mode_t m)
 		return ("");
 }
 
-long	get_time(t_stat *s, t_options *o)
+long	get_time(t_stat *s, t_o *o)
 {
 	if (o->u)
 		return (s->st_atimespec.tv_sec);

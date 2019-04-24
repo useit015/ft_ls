@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/24 05:18:23 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/24 05:22:28 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/24 05:43:39 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void		set_max(t_max *m, t_dir *d)
 		m->size = m->min + m->maj + 3;
 }
 
-void		init_options(t_options *o)
+void		init_o(t_o *o)
 {
 	o->l = 0;
 	o->t = 0;

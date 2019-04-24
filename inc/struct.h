@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 21:05:01 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/24 04:54:48 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/24 05:43:39 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ typedef struct		s_options
 	unsigned int	tt:1;
 	unsigned int	many:10;
 	char			illegal;
-}					t_options;
+}					t_o;
 
 typedef struct		s_max
 {
