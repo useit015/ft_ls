@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 01:22:49 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/24 05:46:35 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/25 01:31:20 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int		main(int ac, char **av)
 		write(2, "usage: ls [-AFRSUTacdfgloprtu1] [file ...]\n", 43);
 		return (1);
 	}
-	a = parse_args(ac, av, i, &o);
+	PROTEC(a, parse_args(ac, av, i, &o))(1);
 	ft_ls_args(a, &o, &m);
 	free_args(a);
 	return (0);

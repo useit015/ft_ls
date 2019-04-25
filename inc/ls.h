@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 01:22:43 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/24 05:59:07 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/25 01:31:02 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <dirent.h>
 # include <sys/stat.h>
 # include <sys/types.h>
+# include <sys/ioctl.h>
 # include <sys/xattr.h>
 # include <sys/acl.h>
 # include "colors.h"
@@ -30,6 +31,8 @@
 # define ALLOC(type, size) (type *)malloc(sizeof(type) * size)
 # define PROTEC(x, y) if (!(x = y)) return
 
+int		get_column_width(t_max *m);
+t_dir	*rev_list(t_dir *d);
 t_args	*rev_args(t_args *d);
 int		is_full(t_dir *d, t_o *o);
 void	swap_dir(t_dir *a, t_dir *b);
@@ -51,7 +54,6 @@ int		is_dir(char *d);
 void	ft_err(char *name);
 void	set_max(t_max *m, t_dir *d);
 t_dir	*sort_content(t_dir *d);
-t_dir	*rev_content(t_dir *d);
 t_dir	*sort_time(t_dir *d, t_o *o);
 t_dir	*sort_size(t_dir *d);
 void	check_d(char *n, t_dir *d);

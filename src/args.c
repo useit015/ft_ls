@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:18:06 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/24 05:58:25 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/25 01:31:47 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 void			sort_tab(int ac, char **av, int i)
 {
+	int		j;
 	int		flag;
 
 	if (!av || !*av || !ac)
@@ -21,11 +22,12 @@ void			sort_tab(int ac, char **av, int i)
 	while (1)
 	{
 		flag = 1;
-		while (++i < ac - 1)
+		j = i;
+		while (++j < ac - 1)
 		{
-			if (ft_strcmp(av[i], av[i + 1]) > 0)
+			if (ft_strcmp(av[j], av[j + 1]) > 0)
 			{
-				ft_swap((void *)&av[i], (void *)&av[i + 1]);
+				ft_swap((void *)&av[j], (void *)&av[j + 1]);
 				flag = 0;
 			}
 		}
@@ -34,32 +36,60 @@ void			sort_tab(int ac, char **av, int i)
 	}
 }
 
-t_args			*make_arg(char **av, int ac, t_o *o, int *i)
+int				arg_err(char **av, int *i)
 {
-	t_args	*cur;
-	t_stat	s;
+	if (!ft_strlen(av[*i]))
+	{
+		ft_err("fts_open");
+		return (0);
+	}
+	else
+	{
+		ft_err(av[(*i)++]);
+		return (1);
+	}
+}
+
+int				check_arg(int ac, char **av, int *i, t_cur *c)
+{
 	int		f;
 
 	f = 1;
-	PROTEC(cur, ALLOC(t_args, 1))(NULL);
-	cur->arg = ft_strdup(*i >= ac && f ? "." : av[*i]);
 	while (1)
 	{
-		free(cur->arg);
-		cur->arg = ft_strdup(*i >= ac && f ? "." : av[*i]);
+		ft_memdel((void **)&c->s);
+		ft_memdel((void **)&c->a->arg);
+		c->a->arg = ft_strdup(*i >= ac && f ? "." : av[*i]);
 		f = 0;
-		lstat(cur->arg, &s);
-		if (!S_ISLNK(s.st_mode) && stat(cur->arg, &s) < 0)
-			ft_err(av[(*i)++]);
+		PROTEC(c->s, ALLOC(t_stat, 1))(0);
+		lstat(c->a->arg, c->s);
+		if (!S_ISLNK(c->s->st_mode) && stat(c->a->arg, c->s) < 0)
+		{
+			if (!arg_err(av, i))
+				return (0);
+		}
 		else
 			break ;
 		if (*i >= ac)
 			break ;
 	}
-	cur->mode = s.st_mode;
-	cur->time = get_time(&s, o);
-	cur->next = NULL;
-	return (cur);
+	return (1);
+}
+
+t_args			*make_arg(char **av, int ac, t_o *o, int *i)
+{
+	t_cur	c;
+
+	PROTEC(c.a, ALLOC(t_args, 1))(NULL);
+	PROTEC(c.s, ALLOC(t_stat, 1))(NULL);
+	c.a->arg = ft_strdup(*i >= ac ? "." : av[*i]);
+	if (!check_arg(ac, av, i, &c))
+		return (NULL);
+	c.a->mode = c.s->st_mode;
+	c.a->time = get_time(c.s, o);
+	c.a->next = NULL;
+	ft_memdel((void **)&c.s);
+	return (c.a);
 }
 
 t_args			*parse_args(int ac, char **av, int i, t_o *o)
@@ -69,11 +99,11 @@ t_args			*parse_args(int ac, char **av, int i, t_o *o)
 
 	if (!o->t && !o->f)
 		sort_tab(ac, av, i - 1);
-	cur = make_arg(av, ac, o, &i);
+	PROTEC(cur, make_arg(av, ac, o, &i))(NULL);
 	head = cur;
 	while (++i < ac)
 	{
-		cur->next = make_arg(av, ac, o, &i);
+		PROTEC(cur->next, make_arg(av, ac, o, &i))(NULL);
 		cur = cur->next;
 	}
 	cur = head;

@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 21:05:01 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/24 05:43:39 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/25 03:04:28 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,12 @@ typedef struct		s_minmaj
 	int				minor;
 	int				major;
 }					t_minmaj;
+
+typedef struct		s_cur
+{
+	t_args			*a;
+	t_stat			*s;
+}					t_cur;
 
 typedef struct		s_dir
 {

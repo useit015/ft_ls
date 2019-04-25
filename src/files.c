@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/13 23:16:39 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/24 05:43:39 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/24 18:59:51 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ t_dir	*sort(t_dir *d, t_o *o)
 		if (o->ss)
 			d = sort_list(d, o, cmp_size);
 		if (o->r)
-			d = rev_content(d);
+			d = rev_list(d);
 	}
 	return (d);
 }
