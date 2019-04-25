@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/23 01:06:00 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/24 23:58:16 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/25 03:46:00 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,11 @@ void	recurse(t_dir *d, t_args *a, t_o *o)
 			new.time = get_time(d->fs, o);
 			ft_printf("\n%s:\n", new.arg);
 			ft_ls(&new, o, &m);
+			ft_memdel((void **)&new.arg);
 		}
 		d = d->next;
 	}
+	ft_memdel((void **)&base);
 }
 
 void	ft_ls_dir(t_args *a, t_o *o, t_max *m)

@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/05 00:48:28 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/25 00:50:43 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/25 03:21:03 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int		ft_putbuff(t_buff *b, int ret)
 {
 	write(1, b->buff, b->i);
-	free(b->buff);
+	ft_memdel((void **)&b->buff);
 	return (ret);
 }
 
@@ -45,20 +45,16 @@ int		buff_cpy(char *f, int pos, va_list ap, t_buff *b)
 	{
 		if ((j = handler(f + i + 1, ap, s, b)))
 		{
-			free(s);
-			return (1);
+			AND(ft_memdel((void **)&s), 1);
 		}
 	}
-	if (*s && j)
+	if (*s && j && ft_strcat(b->buff, s))
 	{
-		ft_strcat(b->buff, s);
-		free(s);
+		ft_memdel((void **)&s);
 		while (b->buff[b->i])
 			b->i++;
 		return (1);
 	}
-	free(s);
-	if (!f[i] || (f[i] == '%' && !f[i + 1]))
-		return (1);
-	return (0);
+	ft_memdel((void **)&s);
+	return (!f[i] || (f[i] == '%' && !f[i + 1]));
 }

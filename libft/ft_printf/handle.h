@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/05 00:46:08 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/25 00:50:29 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/25 03:12:45 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <stdarg.h>
 # include <locale.h>
 # include "lib.h"
+# define AND(x, y) x; return (y)
 
 typedef	struct		s_param
 {

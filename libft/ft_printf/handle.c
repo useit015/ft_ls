@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/16 05:52:37 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/25 00:50:36 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/25 03:14:34 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,15 +29,14 @@ static void	display(char *s, int nu, char *cut, t_buff *b)
 			;
 		s[i] = 0;
 	}
-	else
+	else if ((tmp = s) || 1)
 	{
-		tmp = s;
 		s = ft_strjoin(cut, s);
 		len = ft_strlen(s);
-		free(tmp);
+		ft_memdel((void **)&tmp);
 	}
 	write(1, s, len);
-	free(s);
+	ft_memdel((void **)&s);
 	b->ret += len;
 	ft_memset(b->buff, 0, BUFF_SIZE);
 }
@@ -78,20 +77,16 @@ int			handler(char *f, va_list ap, char *cut, t_buff *b)
 	f = skip_flags(f);
 	if (*f)
 	{
-		if (is_fspec(*f))
-			s = convert_arg(f, ap, &arg, get_base(*f));
-		else
-			s = new_fspec(&arg, *f);
+		s = is_fspec(*f) ? convert_arg(f, ap, &arg, get_base(*f))
+							: new_fspec(&arg, *f);
 		if (arg.err)
 		{
-			free(s);
-			return (0);
+			AND(ft_memdel((void **)&s), 0);
 		}
 		format(s, &arg, cut, b);
 		if ((i = get_next_spec(++f)) > BUFF_SIZE - b->i)
 		{
-			write(1, f, i);
-			return (handler(f + i + 1, ap, "", b));
+			AND(write(1, f, i), handler(f + i + 1, ap, "", b));
 		}
 		if (buff_cpy(f, i, ap, b) == 0)
 			return (0);
