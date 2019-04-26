@@ -6,13 +6,13 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/24 05:40:25 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/25 03:03:48 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/26 00:41:27 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ls.h"
 
-void	print_rights(t_dir *d)
+static void	print_rights(t_dir *d)
 {
 	mode_t		m;
 
@@ -38,7 +38,7 @@ void	print_rights(t_dir *d)
 		(void)ft_printf(m & S_IXOTH ? "x" : "-");
 }
 
-void	print_xattr(t_dir *d, t_args *a, char *base)
+static void	print_xattr(t_dir *d, t_args *a, char *base)
 {
 	acl_t		acl;
 	acl_entry_t	tmp;
@@ -53,20 +53,18 @@ void	print_xattr(t_dir *d, t_args *a, char *base)
 		path = ft_strdup(d->name);
 	acl = acl_get_link_np(path, ACL_TYPE_EXTENDED);
 	if (acl && acl_get_entry(acl, ACL_FIRST_ENTRY, &tmp) == -1)
-	{
-		acl_free(acl);
 		acl = NULL;
-	}
 	xattr = listxattr(path, NULL, 0, XATTR_NOFOLLOW);
 	if (xattr > 0)
 		(void)ft_printf("@");
 	else
 		(void)ft_printf(acl ? "+" : " ");
+	acl_free(acl);
 	ft_memdel((void **)&base);
 	ft_memdel((void **)&path);
 }
 
-void	print_long(t_dir *d, t_args *a, t_o *o, t_max *m)
+static void	print_long(t_dir *d, t_args *a, t_o *o, t_max *m)
 {
 	char	*date;
 
@@ -74,9 +72,9 @@ void	print_long(t_dir *d, t_args *a, t_o *o, t_max *m)
 	print_rights(d);
 	print_xattr(d, a, ft_strjoin(a->arg, "/"));
 	ft_printf("%*d", m->link + 1, d->fs->st_nlink);
-	if (!o->g)
+	if (!o->g && d->p)
 		ft_printf(" %-*s ", m->user, d->p->pw_name);
-	if (!o->o)
+	if (!o->o && d->g)
 		ft_printf(" %-*s ", m->group, d->g->gr_name);
 	if (o->g && o->o)
 		ft_printf("  ");
@@ -88,7 +86,7 @@ void	print_long(t_dir *d, t_args *a, t_o *o, t_max *m)
 	free(date);
 }
 
-void	print_file(t_dir *d, t_args *a, t_o *o, t_max *m)
+void		print_file(t_dir *d, t_args *a, t_o *o, t_max *m)
 {
 	if (o->l)
 		print_long(d, a, o, m);
@@ -104,7 +102,7 @@ void	print_file(t_dir *d, t_args *a, t_o *o, t_max *m)
 	ft_printf("\n");
 }
 
-void	print_dir_content(t_dir *d, t_args *a, t_o *o, t_max *m)
+void		print_dir_content(t_dir *d, t_args *a, t_o *o, t_max *m)
 {
 	if (o->many > 1)
 		ft_printf("%s:\n", a->arg);
@@ -112,7 +110,7 @@ void	print_dir_content(t_dir *d, t_args *a, t_o *o, t_max *m)
 		ft_printf("total %d\n", a->total);
 	while (d && d->dirent)
 	{
-		if (!hidden(d->name, o) && d->fs)
+		if (!hidden(d->name, o) && d->fs && d->fs->st_mode)
 			print_file(d, a, o, m);
 		d = d->next;
 	}

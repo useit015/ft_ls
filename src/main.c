@@ -6,13 +6,26 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 01:22:49 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/25 01:31:20 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/26 01:02:18 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ls.h"
 
-void	free_dir_content(t_dir *d)
+static void	free_args(t_args *a)
+{
+	t_args	*t;
+
+	while (a)
+	{
+		t = a->next;
+		ft_memdel((void **)&a->arg);
+		ft_memdel((void **)&a);
+		a = t;
+	}
+}
+
+void		free_dir_content(t_dir *d)
 {
 	t_dir	*t;
 
@@ -28,20 +41,7 @@ void	free_dir_content(t_dir *d)
 	}
 }
 
-void	free_args(t_args *a)
-{
-	t_args	*t;
-
-	while (a)
-	{
-		t = a->next;
-		ft_memdel((void **)&a->arg);
-		ft_memdel((void **)&a);
-		a = t;
-	}
-}
-
-int		is_dir(char *d)
+int			is_dir(char *d)
 {
 	DIR			*dir;
 
@@ -51,7 +51,7 @@ int		is_dir(char *d)
 	return (1);
 }
 
-void	ft_err(char *name)
+void		ft_err(char *name)
 {
 	write(2, "ls: ", 4);
 	write(2, name, ft_strlen(name));
@@ -59,7 +59,7 @@ void	ft_err(char *name)
 	perror("");
 }
 
-int		main(int ac, char **av)
+int			main(int ac, char **av)
 {
 	int			i;
 	t_o			o;

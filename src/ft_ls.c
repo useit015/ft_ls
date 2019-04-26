@@ -6,13 +6,13 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/23 01:06:00 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/25 03:46:00 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/26 01:01:51 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ls.h"
 
-void	recurse(t_dir *d, t_args *a, t_o *o)
+static void	recurse(t_dir *d, t_args *a, t_o *o)
 {
 	t_args	new;
 	char	*base;
@@ -21,7 +21,7 @@ void	recurse(t_dir *d, t_args *a, t_o *o)
 	base = ft_strjoin(a->arg, "/");
 	while (d)
 	{
-		if (S_ISDIR(d->fs->st_mode) && !hidden(d->name, o)
+		if (d->fs && S_ISDIR(d->fs->st_mode) && !hidden(d->name, o)
 			&& ft_strcmp(d->name, ".") && ft_strcmp(d->name, ".."))
 		{
 			new.arg = ft_strjoin(base, d->name);
@@ -36,7 +36,7 @@ void	recurse(t_dir *d, t_args *a, t_o *o)
 	ft_memdel((void **)&base);
 }
 
-void	ft_ls_dir(t_args *a, t_o *o, t_max *m)
+void		ft_ls_dir(t_args *a, t_o *o, t_max *m)
 {
 	t_dir	*d;
 	char	*base;
@@ -56,7 +56,7 @@ void	ft_ls_dir(t_args *a, t_o *o, t_max *m)
 	}
 }
 
-void	ft_ls_file(t_args *a, t_o *o, t_max *m)
+void		ft_ls_file(t_args *a, t_o *o, t_max *m)
 {
 	t_dir	*d;
 
@@ -84,7 +84,7 @@ void	ft_ls_file(t_args *a, t_o *o, t_max *m)
 	print_file(d, a, o, m);
 }
 
-void	ft_ls(t_args *a, t_o *o, t_max *m)
+void		ft_ls(t_args *a, t_o *o, t_max *m)
 {
 	if ((S_ISDIR(a->mode) || (!o->l && is_dir(a->arg))) && !o->d)
 		ft_ls_dir(a, o, m);
@@ -92,7 +92,7 @@ void	ft_ls(t_args *a, t_o *o, t_max *m)
 		ft_ls_file(a, o, m);
 }
 
-void	ft_ls_args(t_args *a, t_o *o, t_max *m)
+void		ft_ls_args(t_args *a, t_o *o, t_max *m)
 {
 	while (a && a->arg)
 	{

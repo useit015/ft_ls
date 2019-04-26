@@ -6,19 +6,19 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/13 23:16:39 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/24 18:59:51 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/26 00:48:33 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ls.h"
 
-void	get_min_maj(t_dir *d)
+static void		get_min_maj(t_dir *d)
 {
 	int		type;
 
 	type = d->dirent->d_type ? d->dirent->d_type : 0;
 	PROTEC(d->m, ALLOC(t_minmaj, 1));
-	if (type == DT_BLK || type == DT_CHR)
+	if (S_ISBLK(d->fs->st_mode) || S_ISCHR(d->fs->st_mode))
 	{
 		d->m->major = major(d->fs->st_rdev);
 		d->m->minor = minor(d->fs->st_rdev);
@@ -27,34 +27,47 @@ void	get_min_maj(t_dir *d)
 		ft_memdel((void **)&d->m);
 }
 
-int		get_stat(t_dir *d, t_args *a)
+static char		*get_path(t_args *a, t_dir *d)
 {
 	char	*path;
 	char	*tmp;
 
 	tmp = ft_strjoin(a->arg, "/");
 	path = ft_strjoin(tmp, d->dirent->d_name);
+	ft_memdel((void **)&tmp);
+	return (path);
+}
+
+static int		get_stat(t_dir *d, t_args *a)
+{
+	char	*path;
+
+	path = get_path(a, d);
 	PROTEC(d->fs, ALLOC(t_stat, 1))(0);
 	if (d->dirent->d_type == DT_LNK)
 	{
 		if (lstat(path, d->fs) < 0)
+		{
+			ft_memdel((void **)&path);
 			return (0);
+		}
 		d->link_target = ft_strnew(d->fs->st_size + 1);
 		if (readlink(path, d->link_target, d->fs->st_size) == -1)
+		{
+			ft_memdel((void **)&path);
 			return (0);
+		}
 	}
-	else
+	else if ((d->link_target = ft_strnew(1)) && stat(path, d->fs) < 0)
 	{
-		d->link_target = ft_strnew(1);
-		if (stat(path, d->fs) < 0)
-			return (0);
+		ft_memdel((void **)&path);
+		return (0);
 	}
 	ft_memdel((void **)&path);
-	ft_memdel((void **)&tmp);
 	return (1);
 }
 
-t_dir	*sort(t_dir *d, t_o *o)
+static t_dir	*sort(t_dir *d, t_o *o)
 {
 	if (!o->f)
 	{
@@ -69,7 +82,7 @@ t_dir	*sort(t_dir *d, t_o *o)
 	return (d);
 }
 
-t_dir	*prepare_list(t_dir *d, t_args *a, t_o *o, t_max *m)
+t_dir			*prepare_list(t_dir *d, t_args *a, t_o *o, t_max *m)
 {
 	t_dir	*head;
 

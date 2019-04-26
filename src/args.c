@@ -6,13 +6,13 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:18:06 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/25 01:31:47 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/26 00:52:17 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ls.h"
 
-void			sort_tab(int ac, char **av, int i)
+static void		sort_tab(int ac, char **av, int i)
 {
 	int		j;
 	int		flag;
@@ -36,7 +36,7 @@ void			sort_tab(int ac, char **av, int i)
 	}
 }
 
-int				arg_err(char **av, int *i)
+static int		arg_err(char **av, int *i)
 {
 	if (!ft_strlen(av[*i]))
 	{
@@ -50,7 +50,7 @@ int				arg_err(char **av, int *i)
 	}
 }
 
-int				check_arg(int ac, char **av, int *i, t_cur *c)
+static int		check_arg(int ac, char **av, int *i, t_cur *c)
 {
 	int		f;
 
@@ -76,7 +76,7 @@ int				check_arg(int ac, char **av, int *i, t_cur *c)
 	return (1);
 }
 
-t_args			*make_arg(char **av, int ac, t_o *o, int *i)
+static t_args	*make_arg(char **av, int ac, t_o *o, int *i)
 {
 	t_cur	c;
 

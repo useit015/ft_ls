@@ -6,7 +6,7 @@
 /*   By: onahiz <onahiz@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/11 02:39:23 by onahiz            #+#    #+#             */
-/*   Updated: 2019/04/25 03:32:07 by onahiz           ###   ########.fr       */
+/*   Updated: 2019/04/26 00:49:56 by onahiz           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,9 +78,7 @@ int		hidden(char *n, t_o *o)
 {
 	if (!o->a && o->aa && (!ft_strcmp(n, ".") || !ft_strcmp(n, "..")))
 		return (1);
-	if ((!*n || *n == '.') && !o->a && !o->aa)
-		return (1);
-	return (0);
+	return ((!*n || *n == '.') && !o->a && !o->aa);
 }
 
 int		is_full(t_dir *d, t_o *o)
